@@ -1,0 +1,10 @@
+*.log
+README.md
+.gitignore
+subject
+*.pdf
+.vscode
+a.out
+~*
+*.swo
+*.swp
