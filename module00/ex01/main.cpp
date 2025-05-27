@@ -1,7 +1,8 @@
-#include <iostream>
-#include <string>
 #include "PhoneBook.hpp"
 #include "Contact.hpp"
+
+#include <iostream>
+#include <string>
 
 int	main(void)
 {
@@ -11,9 +12,13 @@ int	main(void)
 	while (true)
 	{
 		std::cout << "Enter command (ADD, SEARCH, EXIT): ";
-		std::cin >> input;
-		if (input == "EXIT")
+		std::getline(std::cin, input);
+		if (std::cin.eof() || input == "EXIT")
+		{
+			if (std::cin.eof())
+				std::cout << std::endl;
 			return (0);
+		}
 		else if (input == "ADD")
 			phonebook.add_contact();
 		else if (input == "SEARCH")

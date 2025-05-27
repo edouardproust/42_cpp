@@ -1,7 +1,11 @@
 NAME = phonebook
 FLAGS = -Wall -Werror -Wextra -std=c++98
-SRC = PhoneBook.cpp Contact.cpp main.cpp
-OBJ = $(SRC:.cpp=.o)
+DEPFLAGS = -MMD -MP
+SRC = main.cpp \
+	PhoneBook.cpp \
+	Contact.cpp
+OBJ_DIR = obj
+OBJ = $(addprefix $(OBJ_DIR)/,$(SRC:.cpp=.o))
 DEPS = $(OBJ:.o=.d)
 
 all: $(NAME)
@@ -9,15 +13,19 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	g++ $^ -o $@
 
-%.o: %.cpp Makefile
-	g++ $(FLAGS) -c $< -o $@
+$(OBJ_DIR)/%.o: %.cpp Makefile
+	@mkdir -p $(@D)
+	g++ $(FLAGS) $(DEPFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJ) $(DEPS)
+	rm -rf $(OBJ_DIR)
+	rm -f $(DEPS)
 
 fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
+-include $(DEPS)
 
 .PHONY = all clean fclean re
