@@ -1,56 +1,57 @@
 #include "PhoneBook.hpp"
 #include "Contact.hpp"
 #include <iostream>
-#include <cstdlib>
 #include <limits>
 
-PhoneBook::PhoneBook(void): count_(0)
+PhoneBook::PhoneBook(void): _count(0), _oldest(0)
 {
 	return;
 }
 
-void PhoneBook::add_contact(void)
+void PhoneBook::addContact(void)
 {
-	int	index;
+	int	new_index;
 
-	if (this->count_ >= this->capacity_)
-		index = 0;
+	if (this->_count < this->_capacity)
+		new_index = this->_count;
 	else
-	{
-		index = this->count_;
-		this->count_++;
-	}
-	this->contacts_[index] = Contact::create_contact(index);
-	return;
+		new_index = this->_oldest;
+	this->contacts_[new_index] = Contact::createContact(new_index);
+	if (this->_count < this->_capacity)
+		this->_count++;
+	if(this->_oldest == this->_capacity - 1)
+		this->_oldest = 0;
+	else
+		this->_oldest++;
 }
 
-void PhoneBook::search_contact(void) const
+void PhoneBook::searchContact(void) const
 {
 	int contact_index;
 
-	if (this->count_ == 0)
+	if (this->_count == 0)
 	{
-		std::cout << "Phonebook is empty" << std::endl;
+		std::cout << "Phonebook is empty\n";
 		return;
 	}
-	for (int i = 0; i < this->count_; i++)
-		this->contacts_[i].print_search_line();
-	contact_index = this->get_input_contact_index("Type index of contact: ");
+	for (int i = 0; i < this->_count; i++)
+		this->contacts_[i].printSearchLine();
+	contact_index = this->_getInputContactIndex("Type index of contact: ");
 	if (contact_index != -1)
-		this->contacts_[contact_index].print_contact_infos();
+		this->contacts_[contact_index].printContactInfos();
 }
 
-int PhoneBook::get_input_contact_index(const std::string &prompt) const
+int PhoneBook::_getInputContactIndex(const std::string &prompt) const
 {
     int index;
 
 	std::cout << prompt << std::flush;
-	if(std::cin >> index && index > 0 && index <= this->count_)
+	if(std::cin >> index && index > 0 && index <= this->_count)
 	{
 		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		return (index - 1);
 	}
-	std::cerr << "Invalid index" << std::endl;
+	std::cerr << "Invalid index\n";
 	std::cin.clear();
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	return (-1);

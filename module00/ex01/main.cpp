@@ -20,9 +20,9 @@ int	main(void)
 			return (0);
 		}
 		else if (input == "ADD")
-			phonebook.add_contact();
+			phonebook.addContact();
 		else if (input == "SEARCH")
-			phonebook.search_contact();
+			phonebook.searchContact();
 	}
 	return (0);
 }

@@ -9,16 +9,17 @@ class PhoneBook
 	public:
 		PhoneBook(void);
 
-		void add_contact(void);
-		void search_contact(void) const;
+		void addContact(void);
+		void searchContact(void) const;
 
 	private:
 
-		static const int capacity_ = 8;
-		Contact contacts_[capacity_];
-		int count_;
+		static const int _capacity = 8;
+		Contact contacts_[_capacity];
+		int _count;
+		int	_oldest;
 
-		int get_input_contact_index(const std::string &prompt) const;
+		int _getInputContactIndex(const std::string &prompt) const;
 
 };
 

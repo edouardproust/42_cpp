@@ -1,5 +1,6 @@
 *.out
 *.o
+*.d
 *.swp
 *.swo
 .vscode

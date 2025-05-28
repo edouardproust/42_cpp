@@ -9,21 +9,21 @@ class Contact
 
 		Contact();
 
-		static Contact create_contact(int index);
-		void print_search_line(void) const;
-		void print_contact_infos(void) const;
+		static Contact createContact(int index);
+		void printSearchLine(void) const;
+		void printContactInfos(void) const;
 
 	private:
 
 		int index_;
-		std::string firstname_;
-		std::string lastname_;
-		std::string nickname_;
-		std::string phone_number_;
-		std::string darkest_secret_;
+		std::string _firstname;
+		std::string _lastname;
+		std::string _nickname;
+		std::string _phone_number_;
+		std::string _darkest_secret_;
 
-		static std::string get_input(const std::string &prompt);
-		static std::string truncate_field(const std::string &field);
+		static std::string _getInput(const std::string &prompt);
+		static std::string _truncateField(const std::string &field);
 
 };
 

@@ -8,36 +8,36 @@ Contact::Contact(void)
 	return;
 }
 
-Contact Contact::create_contact(int index)
+Contact Contact::createContact(int index)
 {
 	Contact c;
 	c.index_ = index;
-	c.firstname_ = get_input("Firstname: ");
-	c.lastname_ = get_input("Lastname: ");
-	c.nickname_ = get_input("Nickname: ");
-	c.phone_number_ = get_input("Phone number: ");
-	c.darkest_secret_ = get_input("Darkest secret: ");
+	c._firstname = _getInput("Firstname: ");
+	c._lastname = _getInput("Lastname: ");
+	c._nickname = _getInput("Nickname: ");
+	c._phone_number_ = _getInput("Phone number: ");
+	c._darkest_secret_ = _getInput("Darkest secret: ");
 	return (c);
 }
 
-void Contact::print_search_line(void) const
+void Contact::printSearchLine(void) const
 {
 	std::cout << this->index_ + 1 << " | ";
-	std::cout << truncate_field(this->firstname_) << " | ";
-	std::cout << truncate_field(this->lastname_) << " | ";
-	std::cout << truncate_field(this->nickname_) << std::endl;
+	std::cout << _truncateField(this->_firstname) << " | ";
+	std::cout << _truncateField(this->_lastname) << " | ";
+	std::cout << _truncateField(this->_nickname) << std::endl;
 }
 
-void Contact::print_contact_infos(void) const
+void Contact::printContactInfos(void) const
 {
-	std::cout << "Firstname: " << this->firstname_ << std::endl;
-	std::cout << "Lastname: " << this->lastname_ << std::endl;
-	std::cout << "Nickname: " << this->nickname_ << std::endl;
-	std::cout << "Phone number: " << this->phone_number_ << std::endl;
-	std::cout << "Darkest secret: " << this->darkest_secret_ << std::endl;
+	std::cout << "Firstname: " << this->_firstname << "\n";
+	std::cout << "Lastname: " << this->_lastname << "\n";
+	std::cout << "Nickname: " << this->_nickname << "\n";
+	std::cout << "Phone number: " << this->_phone_number_ << "\n";
+	std::cout << "Darkest secret: " << this->_darkest_secret_ << std::endl;
 }
 
-std::string Contact::get_input(const std::string &prompt)
+std::string Contact::_getInput(const std::string &prompt)
 {
 	std::string str;
 	while (true)
@@ -46,12 +46,12 @@ std::string Contact::get_input(const std::string &prompt)
 		std::getline(std::cin, str);
 		if (std::cin.eof() || !str.empty())
 			break;
-		std::cerr << "Input cannot be empty" << std::endl;
+		std::cerr << "Input cannot be empty\n";
 	}
 	return (str);
 }
 
-std::string Contact::truncate_field(const std::string &field)
+std::string Contact::_truncateField(const std::string &field)
 {
 	if (field.length() > 10)
 		return (field.substr(0, 9) + ".");
