@@ -1,18 +1,18 @@
 NAME = megaphone
 FLAGS = -Wall -Werror -Wextra -std=c++98
-SRC = megaphone.cpp
-OBJ = $(SRC:.cpp=.o)
+SRCS = megaphone.cpp
+OBJS = $(SRCS:.cpp=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJS)
 	g++ -o $@ $^
 
 %.o: %.cpp Makefile
 	g++ $(FLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJS)
 
 fclean: clean
 	rm -f $(NAME)

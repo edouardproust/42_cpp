@@ -1,7 +1,8 @@
 #include "PhoneBook.hpp"
 #include "Contact.hpp"
+
 #include <iostream>
-#include <limits>
+#include <sstream>
 
 PhoneBook::PhoneBook(void): _count(0), _oldest(0)
 {
@@ -36,23 +37,21 @@ void PhoneBook::searchContact(void) const
 	}
 	for (int i = 0; i < this->_count; i++)
 		this->contacts_[i].printSearchLine();
-	contact_index = this->_getInputContactIndex("Type index of contact: ");
+	contact_index = this->_getInputContactIndex("Enter index of contact: ");
 	if (contact_index != -1)
 		this->contacts_[contact_index].printContactInfos();
 }
 
 int PhoneBook::_getInputContactIndex(const std::string &prompt) const
 {
-    int index;
+	std::string	input;
+    int			index;
 
-	std::cout << prompt << std::flush;
-	if(std::cin >> index && index > 0 && index <= this->_count)
-	{
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	std::cout << prompt;
+	std::getline(std::cin, input);
+	std::stringstream(input) >> index;
+	if(index > 0 && index <= this->_count)
 		return (index - 1);
-	}
 	std::cerr << "Invalid index\n";
-	std::cin.clear();
-	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	return (-1);
 }

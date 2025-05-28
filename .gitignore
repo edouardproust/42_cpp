@@ -1,9 +1,11 @@
-*.out
 *.o
 *.d
+*.log
+*.out
 *.swp
 *.swo
 .vscode
 
 megaphone
 phonebook
+accounts

@@ -42,7 +42,7 @@ std::string Contact::_getInput(const std::string &prompt)
 	std::string str;
 	while (true)
 	{
-		std::cout << prompt << std::flush;
+		std::cout << prompt;
 		std::getline(std::cin, str);
 		if (std::cin.eof() || !str.empty())
 			break;
