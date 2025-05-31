@@ -2,53 +2,73 @@
 #include <fstream>
 #include <sstream>
 
-bool searchAndReplace(char *filename, std::string &content,
-	std::string const& search, std::string const& replace)
+static bool setIFStream(std::ifstream& ifs, char* infile, std::string& content)
 {
-	std::size_t pos = 0;
+	std::stringstream	buffer;
 
-	std::string outFile = std::string(filename) + ".replace";
-	std::ofstream ofs(outFile.c_str());
-	if (!ofs)
+	ifs.open(infile);
+	if (!ifs.is_open())
 		return (false);
+	buffer << ifs.rdbuf();
+	content = buffer.str();
+	return (true);
+}
+
+static bool setOFStream(std::ofstream& ofs, char *infile,std::string const& fileExt)
+{
+	std::string	const outFile = std::string(infile) + fileExt;
+
+	ofs.open(outFile.c_str());
+	if (!ofs.is_open())
+		return (false);
+	return (true);
+}
+
+static void searchAndReplace(std::string &content, std::string const& search,
+	std::string const& replace)
+{
+	std::size_t 		pos = 0;
+	std::size_t const	search_len = search.length();
+	std::size_t const	replace_len = replace.length();
+
+	if (search_len == 0)
+		return;
 	while (true)
 	{
 		pos = content.find(search, pos);
 		if (pos == std::string::npos)
 			break;
-		content.erase(pos, search.length());
+		content.erase(pos, search_len);
 		content.insert(pos, replace);
-		pos += replace.length();
+		pos += replace_len;
 	}
-	ofs << content;
-	ofs.close();
-	return (true);
 }
 
 int main(int argc, char **argv)
 {
-	std::stringstream buffer;
-	std::string content;
+	std::ifstream	ifs;
+	std::ofstream	ofs;
+	std::string		content;
 
 	if (argc != 4)
 	{
-		std::cerr << "Invalid number of arguments. ";
-		std::cerr << "Usage: ./sed <file> <s1> <s2>" << std::endl;
+		std::cerr << "Invalid number of arguments. "
+			<< "Usage: ./sed <file> <s1> <s2>" << std::endl;
 		return (1);
 	}
-	std::ifstream ifs(argv[1]);
-	if (!ifs)
+	if (!setIFStream(ifs, argv[1], content))
 	{
-		std::cerr << "Unable to open file for reading" << std::endl;
+		std::cerr << "Unable to open input file" << std::endl;
 		return (1);
 	}
-	buffer << ifs.rdbuf();
-	content = buffer.str();
-	if (!searchAndReplace(argv[1], content, argv[2], argv[3]))
+	if (!setOFStream(ofs, argv[1], ".replace"))
 	{
-		std::cerr << "Unable to open file for writing" << std::endl;
+		std::cerr << "Unable to create output file" << std::endl;
 		return (1);
 	}
+	searchAndReplace(content, argv[2], argv[3]);
+	ofs << content;
+	ofs.close();
 	ifs.close();
 	return (0);
 }
@@ -63,4 +83,5 @@ It was a sad day, not just because of the weather, but because everything felt w
 The empty streets looked sad, the gray sky hung low, and even the birds seemed too sad to sing.
 As I sat alone in the café, sipping cold coffee, I couldn't help but think how sad it is to be
 circled by people and still feel so alone.
+
 */
