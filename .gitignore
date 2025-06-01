@@ -7,9 +7,12 @@
 .vscode
 *.replace
 
+#module00
 megaphone
 phonebook
 accounts
+
+#module01
 zombies
 horde
 brain
@@ -17,3 +20,6 @@ violence
 sed
 harl
 harlFilter
+
+#module02
+fixed

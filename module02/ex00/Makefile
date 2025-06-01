@@ -1,19 +1,19 @@
-NAME = harlFilter
-FLAGS = -Werror -Wall -Wextra -std=c++98
+NAME = fixed
+FLAGS = -Wall -Werror -Wextra -std=c++98
 DEPFLAGS = -MMD -MP
-SRCS = main.cpp Harl.cpp
+SRCS = main.cpp Fixed.cpp
 OBJ_DIR = obj
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
 DEPS = $(OBJS:.o=.d)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	g++ $^ -o $@
-
 $(OBJ_DIR)/%.o: %.cpp Makefile
 	@mkdir -p $(@D)
 	g++ $(FLAGS) $(DEPFLAGS) -c $< -o $@
+
+$(NAME): $(OBJS)
+	g++ $^ -o $@
 
 clean:
 	rm -rf $(OBJ_DIR)
