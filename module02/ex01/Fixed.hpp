@@ -5,6 +5,11 @@
 class Fixed
 {
 
+	private:
+
+		int					_rawBits;
+		static const int	_fractBits;
+
 	public:
 
 		Fixed(void);
@@ -19,11 +24,6 @@ class Fixed
 		void	setRawBits(int const raw);
 		float	toFloat( void ) const;
 		int		toInt( void ) const;
-
-	private:
-
-		int					_rawBits;
-		static const int	_fractionalBits;
 
 };
 

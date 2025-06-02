@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 
-const int	Fixed::_fractionalBits = 8;
+const int	Fixed::_fractBits = 8;
 
 Fixed::Fixed(void): _rawBits(0)
 {
@@ -12,13 +12,13 @@ Fixed::Fixed(void): _rawBits(0)
 Fixed::Fixed(const int intNb)
 {
 	std::cout << "Int constructor called" << std::endl;
-	this->_rawBits = intNb << this->_fractionalBits;
+	this->_rawBits = intNb << this->_fractBits;
 }
 
 Fixed::Fixed(const float realNb)
 {
 	std::cout << "Int constructor called" << std::endl;
-	this->_rawBits = roundf(realNb * (1 << this->_fractionalBits));
+	this->_rawBits = roundf(realNb * (1 << this->_fractBits));
 }
 
 Fixed::Fixed(const Fixed &src)
@@ -53,12 +53,12 @@ void	Fixed::setRawBits(const int raw)
 
 float	Fixed::toFloat( void ) const
 {
-	return ((float)this->_rawBits / (1 << this->_fractionalBits));
+	return ((float)this->_rawBits / (1 << this->_fractBits));
 }
 
 int		Fixed::toInt( void ) const
 {
-	return (this->_rawBits >> this->_fractionalBits);
+	return (this->_rawBits >> this->_fractBits);
 }
 
 std::ostream	&operator<<(std::ostream &o, const Fixed &right)
