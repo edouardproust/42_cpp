@@ -1,23 +1,7 @@
 #include "Fixed.hpp"
 #include <iostream>
 
-/* Subject main: */
-int main( void )
-{
-	Fixed a;
-	Fixed const b( Fixed( 5.05f ) * Fixed( 2 ) );
-	std::cout << a << std::endl;
-	std::cout << ++a << std::endl;
-	std::cout << a << std::endl;
-	std::cout << a++ << std::endl;
-	std::cout << a << std::endl;
-	std::cout << b << std::endl;
-	std::cout << Fixed::max( a, b ) << std::endl;
-	return (0);
-}
 
-/* More tests */
-/*
 static	std::string	printBool(bool val)
 {
 	return (val ? "true" : "false");
@@ -68,4 +52,3 @@ int	main(void)
 	std::cout << "min(a, b): " << Fixed::min(a, a) << std::endl;
 	std::cout << "max(a, b): " << Fixed::max(b, b) << std::endl;
 }
-*/

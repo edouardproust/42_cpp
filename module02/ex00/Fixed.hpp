@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FIXED_HPP
+# define FIXED_HPP
 
 class Fixed
 {
@@ -20,3 +21,5 @@ class Fixed
 		void	setRawBits(int const raw);
 
 };
+
+#endif
