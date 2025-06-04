@@ -2,12 +2,12 @@
 # define CLAP_TRAP_HPP
 
 # include <string>
-# include <ostream>
+# include <iostream>
 
 class ClapTrap
 {
 
-	private:
+	protected:
 
 		std::string		_name;
 		unsigned int	_hit;
@@ -17,7 +17,7 @@ class ClapTrap
 	public:
 
 		// Constructor
-		ClapTrap(void);
+		ClapTrap();
 		ClapTrap(std::string name);
 		ClapTrap(const ClapTrap &src);
 
@@ -27,7 +27,7 @@ class ClapTrap
 		// Operator overload
 		ClapTrap	&operator=(const ClapTrap &other);
 
-		// Action functions
+		// Action
 		void	attack(const std::string& target);
 		void	takeDamage(unsigned int amount);
 		void	beRepaired(unsigned int amount);

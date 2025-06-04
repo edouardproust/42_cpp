@@ -1,13 +1,14 @@
 #include "ClapTrap.hpp"
-#include <iostream>
 
-ClapTrap::ClapTrap (void):
-	_name("Bob"),
+// Constructor
+
+ClapTrap::ClapTrap ():
+	_name("C"),
 	_hit(10),
 	_energy(10),
 	_attack(0)
 {
-	std::cout << "ClapTrap " << this->_name << " created! (Default model)" << std::endl;
+	std::cout << "Default ClapTrap " << this->_name << " created!" << std::endl;
 }
 
 ClapTrap::ClapTrap(std::string name):
@@ -25,15 +26,17 @@ ClapTrap::ClapTrap(const ClapTrap &src):
 	_energy(src._energy),
 	_attack(src._attack)
 {
-	std::cout << "ClapTrap " << this->_name << " duplicated!" << std::endl;
+	std::cout << "ClapTrap " << this->_name << " cloned!" << std::endl;
 }
 
 // Destructor
+
 ClapTrap::~ClapTrap(void) {
 	std::cout << "ClapTrap " << this->_name << " destroyed!" << std::endl;
 }
 
 // Operator overload
+
 ClapTrap	&ClapTrap::operator=(const ClapTrap &other) {
 	if (this != &other)
 	{
@@ -48,31 +51,43 @@ ClapTrap	&ClapTrap::operator=(const ClapTrap &other) {
 	return (*this);
 }
 
-// Action functions
+// Action
 
 void	ClapTrap::attack(const std::string& target) {
-	if (this->_energy > 0) {
+	if (this->_energy <= 0) {
+		std::cout << "ClapTrap " << this->_name << " cannot attack (no energy)" << std::endl;
+	} else if (this->_hit <= 0) {
+		std::cout << "ClapTrap " << this->_name << " cannot attack (he is dead)" << std::endl;
+	} else {
 		--this->_energy;
 		std::cout << "ClapTrap " << this->_name << " attacks " << target << " causing " << this->_attack << " damage!" << std::endl;
-	} else {
-		std::cout << "ClapTrap " << this->_name << " cannot attack" << std::endl;
 	}
 }
 
 void	ClapTrap::takeDamage(unsigned int amount) {
-	if (amount > this->_hit)
-		amount = this->_hit;
-	this->_hit -= amount;
-	std::cout << "ClapTrap " << this->_name << " takes " <<  amount << " damage" << std::endl;
+	if (this->_hit <= 0) {
+		std::cout << "ClapTrap " << this->_name << " takes 0 damage (he is dead)" << std::endl;
+	} else {
+		if (amount > this->_hit)
+			amount = this->_hit;
+		this->_hit -= amount;
+		std::cout << "ClapTrap " << this->_name << " takes " <<  amount << " damage";
+		if (this->_hit == 0) {
+			std::cout << " and died!";
+		}
+		std::cout << std::endl;
+	}
 }
 
 void	ClapTrap::beRepaired(unsigned int amount) {
-	if (this->_energy > 0) {
+	if (this->_energy <= 0) {
+		std::cout << "ClapTrap " << this->_name << " cannot heal (no energy)" << std::endl;
+	} else if (this->_hit <= 0) {
+		std::cout << "ClapTrap " << this->_name << " cannot heal (he is dead)" << std::endl;
+	} else {
 		this->_hit += amount;
 		--this->_energy;
 		std::cout << "ClapTrap " << this->_name << " regained " << amount << " hit points" << std::endl;
-	} else {
-		std::cout << "ClapTrap " << this->_name << " cannot get repaired" << std::endl;
 	}
 }
 
@@ -87,7 +102,7 @@ void	ClapTrap::setName(const std::string &name)
 {
 	std::string	prevName = this->_name;
 	this->_name = name;
-	std::cout << "ClapTrap " << prevName << " renamed: " << this->_name << std::endl;
+	std::cout << "ClapTrap " << prevName << " renamed " << this->_name << std::endl;
 }
 
 unsigned int	ClapTrap::getHit() const {

@@ -6,6 +6,7 @@
 *.swo
 .vscode
 *.replace
+test
 
 #module00
 megaphone
@@ -27,3 +28,5 @@ fixed
 #module03
 clapTrap
 scavTrap
+fragTrap
+diamondTrap
