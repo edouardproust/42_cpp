@@ -1,7 +1,7 @@
-NAME = fragTrap
-FLAGS = -Werror -Wall -Wextra -std=c++98
+NAME = diamondTrap
+FLAGS = -Werror -Wall -Wextra -std=c++98 -Wshadow
 DEPFLAGS = -MMD -MP
-SRCS = main.cpp ClapTrap.cpp ScavTrap.cpp FragTrap.cpp
+SRCS = main.cpp ClapTrap.cpp ScavTrap.cpp FragTrap.cpp DiamondTrap.cpp
 OBJ_DIR = obj
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
 DEPS = $(OBJS:.o=.d)

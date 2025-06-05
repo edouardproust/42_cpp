@@ -7,6 +7,11 @@
 class FragTrap: virtual public ClapTrap
 {
 
+	protected:
+
+		unsigned int	_frag_hit;
+		unsigned int	_frag_attack;
+
 	public:
 		// Constructor
 		FragTrap();

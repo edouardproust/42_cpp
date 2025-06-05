@@ -2,7 +2,8 @@
 
 // Constructor
 
-ScavTrap::ScavTrap ()
+ScavTrap::ScavTrap ():
+	ClapTrap()
 {
 	this->_hit = 100;
 	this->_energy = 50;
@@ -67,5 +68,3 @@ void	ScavTrap::guardGate()
 		std::cout << "ScavTrap " << this->_name << " now guards the gate!" << std::endl;
 	}
 }
-
-

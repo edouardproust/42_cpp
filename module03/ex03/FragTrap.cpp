@@ -2,11 +2,14 @@
 
 // Constructor
 
-FragTrap::FragTrap ()
+FragTrap::FragTrap ():
+	ClapTrap()
 {
 	this->_hit = 100;
+	this->_frag_hit = 100;
 	this->_energy = 100;
 	this->_attack = 30;
+	this->_frag_attack = 30;
 	std::cout << "Default FragTrap " << this->_name << " sent by the gods!" << std::endl;
 }
 
@@ -14,8 +17,10 @@ FragTrap::FragTrap(std::string name):
 	ClapTrap(name)
 {
 	this->_hit = 100;
+	this->_frag_hit = 100;
 	this->_energy = 100;
 	this->_attack = 30;
+	this->_frag_attack = 30;
 	std::cout << "FragTrap " << this->_name << " created!" << std::endl;
 }
 
@@ -29,7 +34,7 @@ FragTrap::FragTrap(const FragTrap &src):
 
 FragTrap::~FragTrap()
 {
-	std::cout << "FragTrap " << this->_name << " called bak to heaven!" << std::endl;
+	std::cout << "FragTrap " << this->_name << " called back to heaven!" << std::endl;
 }
 
 // Operator overload
@@ -56,5 +61,3 @@ void	FragTrap::highFivesGuys(void)
 		std::cout << "FragTrap " << this->_name << " does a highfive to all the robots!" << std::endl;
 	}
 }
-
-

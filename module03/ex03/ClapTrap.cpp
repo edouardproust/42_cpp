@@ -121,6 +121,6 @@ unsigned int	ClapTrap::getAttack() const {
 
 std::ostream	&operator<<(std::ostream &o, const ClapTrap &c)
 {
-	o << "  [" << c.getName() << " hit:" << c.getHit() << ", ene:" << c.getEnergy() << ", att:" << c.getAttack() << "]";
+	o << "  Stats [hit:" << c.getHit() << ", ene:" << c.getEnergy() << ", att:" << c.getAttack() << "]";
 	return (o);
 }

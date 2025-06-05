@@ -7,6 +7,10 @@
 class ScavTrap: virtual public ClapTrap
 {
 
+	protected:
+
+		unsigned int	_scav_energy;
+
 	public:
 		// Constructor
 		ScavTrap();

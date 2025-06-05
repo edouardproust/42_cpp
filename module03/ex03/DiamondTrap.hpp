@@ -5,7 +5,7 @@
 # include "ScavTrap.hpp"
 # include <iostream>
 
-class DiamondTrap: public FragTrap, public ScavTrap
+class DiamondTrap: public ScavTrap, public FragTrap
 {
 	private:
 
@@ -24,6 +24,7 @@ class DiamondTrap: public FragTrap, public ScavTrap
 		DiamondTrap	&operator=(const DiamondTrap &other);
 
 		// Actions
+		void	attack(const std::string& target);
 		void	whoAmI();
 
 };
