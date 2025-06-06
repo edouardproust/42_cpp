@@ -1,6 +1,6 @@
 #include "Animal.hpp"
 
-Animal::Animal(): type("Animal")
+Animal::Animal(): type("animal")
 {
 	std::cout << "Animal created" << std::endl;
 }

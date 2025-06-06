@@ -1,19 +1,19 @@
 #include "AAnimal.hpp"
 
-AAnimal::AAnimal(): type("AAnimal")
+AAnimal::AAnimal(): type("animal")
 {
-	std::cout << "AAnimal created" << std::endl;
+	std::cout << "Animal created" << std::endl;
 }
 
 AAnimal::AAnimal(const AAnimal &src)
 {
 	*this = src;
-	std::cout << "AAnimal copied" << std::endl;
+	std::cout << "Animal copied" << std::endl;
 }
 
 AAnimal::~AAnimal()
 {
-	std::cout << "AAnimal deleted" << std::endl;
+	std::cout << "Animal deleted" << std::endl;
 }
 
 AAnimal	&AAnimal::operator=(const AAnimal& other)
