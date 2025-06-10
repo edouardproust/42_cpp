@@ -1,11 +1,11 @@
 #include "AAnimal.hpp"
 
-AAnimal::AAnimal(): type("animal")
+AAnimal::AAnimal(): type("AAnimal")
 {
 	std::cout << "Animal created" << std::endl;
 }
 
-AAnimal::AAnimal(const AAnimal &src)
+AAnimal::AAnimal(AAnimal const& src)
 {
 	*this = src;
 	std::cout << "Animal copied" << std::endl;
@@ -16,7 +16,7 @@ AAnimal::~AAnimal()
 	std::cout << "Animal deleted" << std::endl;
 }
 
-AAnimal	&AAnimal::operator=(const AAnimal& other)
+AAnimal&	AAnimal::operator=(AAnimal const& other)
 {
 	if (this != &other) {
 		this->type = other.type;
@@ -24,19 +24,7 @@ AAnimal	&AAnimal::operator=(const AAnimal& other)
 	return (*this);
 }
 
-void	AAnimal::makeSound() const
-{
-	std::cout << "Some mysterious animal noise..." << std::endl;
-}
-
-std::string AAnimal::getType() const
+std::string const&	AAnimal::getType() const
 {
 	return (this->type);
-}
-
-std::ostream	&operator<<(std::ostream &o, const AAnimal &a)
-{
-	o << a.getType() << ": ";
-	a.makeSound();
-	return (o);
 }

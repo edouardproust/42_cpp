@@ -10,9 +10,7 @@ AMateria::~AMateria() {}
 
 AMateria&	AMateria::operator=(AMateria const& rhs)
 {
-	if (this != &rhs) {
-		this->_type = rhs._type;
-	}
+	(void)rhs; // Do nothing as _type is const
 	return (*this);
 }
 

@@ -49,9 +49,11 @@ void	Character::equip(AMateria* m)
 	for(int i = 0; i < 4; i++) {
 		if (!this->_materias[i]) {
 			this->_materias[i] = m;
-			break;
+			return;
 		}
 	}
+	delete m; /* Delete materia if it is out of range
+	('delete NULL' is a no-op) */
 }
 
 void	Character::unequip(int idx)

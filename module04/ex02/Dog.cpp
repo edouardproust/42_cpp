@@ -4,11 +4,11 @@ Dog::Dog():
 	AAnimal(),
 	brain(new Brain)
 {
-	this->type = "dog";
+	this->type = "Dog";
 	std::cout << "Dog created" << std::endl;
 }
 
-Dog::Dog(const Dog &src):
+Dog::Dog(Dog const& src):
 	AAnimal(src),
 	brain(new Brain(*src.brain))
 {
@@ -21,7 +21,7 @@ Dog::~Dog()
 	std::cout << "Dog deleted" << std::endl;
 }
 
-Dog	&Dog::operator=(const Dog &other)
+Dog&	Dog::operator=(Dog const& other)
 {
 	if (this != &other)	{
 		AAnimal::operator=(other);
@@ -34,4 +34,14 @@ Dog	&Dog::operator=(const Dog &other)
 void	Dog::makeSound() const
 {
 	std::cout << "Woof! Woof!" << std::endl;
+}
+
+std::string const&	Dog::getIdea(size_t index) const
+{
+	return (this->brain->getIdea(index));
+}
+
+void	Dog::setIdea(size_t index, std::string const& idea)
+{
+	this->brain->addIdea(index, idea);
 }

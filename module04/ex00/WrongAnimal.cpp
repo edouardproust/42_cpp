@@ -1,6 +1,6 @@
 #include "WrongAnimal.hpp"
 
-WrongAnimal::WrongAnimal(): type("wrong animal")
+WrongAnimal::WrongAnimal(): type("Wrong animal")
 {
 	std::cout << "WrongAnimal created" << std::endl;
 }

@@ -2,7 +2,7 @@
 
 WrongCat::WrongCat(): WrongAnimal()
 {
-	this->type = "wrong cat";
+	this->type = "Wrong cat";
 	std::cout << "WrongCat created" << std::endl;
 }
 

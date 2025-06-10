@@ -7,6 +7,7 @@
 .vscode
 *.replace
 test
+*.bak
 
 #module00
 megaphone

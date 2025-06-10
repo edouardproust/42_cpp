@@ -5,8 +5,6 @@ SRCS = main.cpp \
 	Animal.cpp \
 	Cat.cpp \
 	Dog.cpp \
-	WrongAnimal.cpp \
-	WrongCat.cpp \
 	Brain.cpp
 OBJ_DIR = obj
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
@@ -29,6 +27,6 @@ fclean: clean
 
 re: fclean all
 
--include ($DEPS)
+-include $(DEPS)
 
 .PHONY: all clean fclean re

@@ -9,11 +9,11 @@ class Dog: public Animal
 	public:
 
 		Dog();
-		Dog(const Dog &src);
+		Dog(Dog const& src);
 
 		virtual	~Dog();
 
-		Dog	&operator=(const Dog &other);
+		Dog&	operator=(Dog const& other);
 
 		virtual void	makeSound() const;
 

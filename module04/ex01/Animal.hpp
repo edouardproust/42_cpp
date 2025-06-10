@@ -14,18 +14,18 @@ class Animal
 	public:
 
 		Animal();
-		Animal(const Animal &src);
+		Animal(Animal const& src);
 
 		virtual	~Animal();
 
-		Animal	&operator=(const Animal &other);
+		Animal&	operator=(Animal const& other);
 
 		virtual void	makeSound() const;
 
-		std::string getType() const;
+		std::string const&			getType() const;
+		virtual std::string const&	getIdea(size_t index) const;
+		virtual void				setIdea(size_t index, std::string const& idea);
 
 };
-
-std::ostream	&operator<<(std::ostream &o, const Animal &a);
 
 #endif

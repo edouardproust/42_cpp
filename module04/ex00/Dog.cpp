@@ -2,11 +2,11 @@
 
 Dog::Dog(): Animal()
 {
-	this->type = "dog";
+	this->type = "Dog";
 	std::cout << "Dog created" << std::endl;
 }
 
-Dog::Dog(const Dog &src): Animal(src)
+Dog::Dog(Dog const& src): Animal(src)
 {
 	std::cout << "Dog copied" << std::endl;
 }
@@ -16,7 +16,7 @@ Dog::~Dog()
 	std::cout << "Dog deleted" << std::endl;
 }
 
-Dog	&Dog::operator=(const Dog &other)
+Dog&	Dog::operator=(Dog const& other)
 {
 	if (this != &other)	{
 		Animal::operator=(other);

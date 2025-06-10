@@ -12,13 +12,15 @@ class Cat: public Animal
 	public:
 
 		Cat();
-		Cat(const Cat &src);
+		Cat(Cat const& src);
 
 		virtual	~Cat();
 
-		Cat	&operator=(const Cat &other);
+		Cat&	operator=(Cat const& other);
 
-		virtual void	makeSound() const;
+		virtual void				makeSound() const;
+		virtual std::string const&	getIdea(size_t index) const;
+		virtual void				setIdea(size_t index, std::string const& idea);
 
 };
 
