@@ -9,12 +9,12 @@
 test
 *.bak
 
-#module00
+#cpp00
 megaphone
 phonebook
 accounts
 
-#module01
+#cpp01
 zombies
 horde
 brain
@@ -23,15 +23,18 @@ sed
 harl
 harlFilter
 
-#module02
+#cpp02
 fixed
 
-#module03
+#cpp03
 clapTrap
 scavTrap
 fragTrap
 diamondTrap
 
-#module04
+#cpp04
 animal
 materia
+
+#cpp05
+bureaucrat
