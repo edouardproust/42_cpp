@@ -54,12 +54,12 @@ void	Bureaucrat::promote()
 
 char const*	Bureaucrat::GradeTooLowException::what() const throw()
 {
-	return "Bureaucrat's grade is lower than 150";
+	return ("Error: bureaucrat's grade is too low");
 }
 
 char const*	Bureaucrat::GradeTooHighException::what() const throw()
 {
-	return "Bureaucrat's grade is higher than 1";
+	return ("Error: bureaucrat's grade is too high");
 }
 
 std::ostream&	operator<<(std::ostream& lhs, Bureaucrat const& rhs)

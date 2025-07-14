@@ -29,23 +29,17 @@ class Form
 
 		void	beSigned(Bureaucrat const& b);
 
-		class GradeTooHighException: public std::exception
+		class GradeTooLowException: public std::exception
 		{
-			std::string _msg;
 			public:
-				GradeTooHighException(std::string const& msg);
-				virtual ~GradeTooHighException() throw();
 				virtual char const*	what() const throw();
 		};
 
-		class GradeTooLowException: public std::exception
+		class GradeTooHighException: public std::exception
 		{
-			std::string	_msg;
 			public:
-				GradeTooLowException(std::string const& msg);
-				virtual ~GradeTooLowException() throw();
 				virtual char const*	what() const throw();
-		};
+		};	
 };
 
 std::ostream&	operator<<(std::ostream& lhs, Form const& rhs);
