@@ -13,5 +13,6 @@ subject
 *.swo
 *.swp
 
-convert
-serialize
+static_cast
+reinterpret_cast
+dynamic_cast

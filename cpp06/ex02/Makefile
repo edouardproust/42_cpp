@@ -1,7 +1,7 @@
-NAME = reinterpret_cast
+NAME = dynamic_cast
 CC = c++
 FLAGS = -Werror -Wall -Wextra -std=c++98 -MMD
-SRCS = main.cpp Serializer.cpp
+SRCS = main.cpp Base.cpp A.cpp B.cpp C.cpp
 OBJS_DIR = obj
 OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
 DEPS = $(OBJS:.o=.d)
