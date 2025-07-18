@@ -1,18 +1,18 @@
 #ifndef SCALAR_CONVERTER_HPP
 # define SCALAR_CONVERTER_HPP
 
-# include <string>
-# include <iostream>
-# include <sstream>
-# include <cstdlib>
-# include <limits>
-# include <cmath>
-# include <iomanip>
+# include <string> // std::string, std::string::erase(), std::string::find_last_not_of(), etc.
+# include <iostream> // std::cout
+# include <sstream> // std::ostringstream
+# include <cstdlib> // std::strtod()
+# include <limits> // std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), etc.
+# include <cmath> // std::fabs(), std::isnan()
+# include <iomanip> // std::fixed, std::setprecision()
 
 class ScalarConverter
 {
 	public:
-	
+
 		static void	convert(std::string const& literal);
 
 	private:

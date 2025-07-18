@@ -26,9 +26,9 @@ void	RobotomyRequestForm::executeAction() const
 	std::srand(time(0));
 	std::cout << "ZZzzzRRrrr... (drilling noise)" << std::endl;
 	if (std::rand() % 2 == 0) { // 50% probability
-		std::cout << _target << " has been robotomized successfully." << std::endl;
+		std::cout << "\"" << _target << "\" has been robotomized successfully." << std::endl;
 	} else {
-		std::cout << "Robotomy failed on " << _target << "." << std::endl;
+		std::cout << "Robotomy failed on \"" << _target << "\"." << std::endl;
 	}
 }
 

@@ -46,5 +46,4 @@ void	Base::identify(Base& p)
 		dynamic_cast<C&>(p);
 		std::cout << "C" << std::endl;
 	} catch (...) {}
-} 
-
+}

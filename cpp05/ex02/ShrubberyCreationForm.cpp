@@ -1,5 +1,4 @@
 #include "ShrubberyCreationForm.hpp"
-#include <fstream>
 
 ShrubberyCreationForm::ShrubberyCreationForm():
 	AForm("shrubbery creation", 145, 137), _target("home") {}
@@ -24,7 +23,7 @@ ShrubberyCreationForm::~ShrubberyCreationForm() {}
 void	ShrubberyCreationForm::executeAction() const
 {
 	std::ofstream o((_target + "_shrubbery").c_str());
-	if (!o) {
+	if (!o) { // operator! overload, equivalent to `!o.fail()`
 		std::cerr << "Error: opening file " << _target << "_shrubbery" << std::endl;
 		return;
 	}

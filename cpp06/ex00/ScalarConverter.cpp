@@ -57,12 +57,9 @@ std::string	ScalarConverter::_dtof(double d, bool isValid)
 	std::ostringstream o;
 	if (!isValid) {
 		o << "impossible";
-	} else if (d > std::numeric_limits<float>::max()) {
-		o << "inff";
-	} else if (d < -std::numeric_limits<float>::max()) {
-		o << "-inff";
-	} else if (std::abs(d) < std::numeric_limits<float>::min()) {
-		o << "DEBUG: " << d << "\n";
+	} else if (std::fabs(d) > std::numeric_limits<float>::max()) {
+		o << (d < 0.0 ? "-inff" : "inff");
+	} else if (std::fabs(d) < std::numeric_limits<float>::min()) {
 		o << (d < 0.0 ? "-0.0" : "0.0");
     } else {
 		o << std::fixed << std::setprecision(6);
@@ -80,7 +77,7 @@ std::string	ScalarConverter::_formatd(double d, bool isValid)
 	std::ostringstream o;
 	if (!isValid) {
 		o << "impossible";
-		return (o.str());
+		return o.str();
 	}
 	o << std::fixed << std::setprecision(15) << d;
 	std::string s = o.str();
@@ -88,4 +85,3 @@ std::string	ScalarConverter::_formatd(double d, bool isValid)
 	if (s[s.size() - 1] == '.') s+= '0';
 	return (s);
 }
-

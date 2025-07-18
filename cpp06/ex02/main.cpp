@@ -8,6 +8,8 @@ int	main()
 	Base b;
 	Base*	p = b.generate();
 	b.identify(p);
-	b.identify(*p);	
+	b.identify(*p);
+
+	delete p;
 	return (0);
 }
