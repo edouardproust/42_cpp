@@ -1,4 +1,4 @@
-NAME = dynamic_cast
+NAME = dynamic
 CC = c++
 FLAGS = -Werror -Wall -Wextra -std=c++98 -MMD
 SRCS = main.cpp Base.cpp A.cpp B.cpp C.cpp

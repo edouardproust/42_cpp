@@ -1,6 +1,9 @@
 #include "Serializer.hpp"
 #include <iostream>
 
+/**
+ * ex01: Use of `reinterpret_cast` to do reinterpretation (pointer to pointer).
+ */
 int	main()
 {
 	Data*	d = new Data;

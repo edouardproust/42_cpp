@@ -1,5 +1,8 @@
 #include "ScalarConverter.hpp"
 
+/**
+ * ex00: Use of `static_cast` to do conversions between literals
+ */
 int	main(int ac, char** av)
 {
 	if (ac != 2) {

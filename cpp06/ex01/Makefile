@@ -1,4 +1,4 @@
-NAME = reinterpret_cast
+NAME = serialize
 CC = c++
 FLAGS = -Werror -Wall -Wextra -std=c++98 -MMD
 SRCS = main.cpp Serializer.cpp

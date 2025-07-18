@@ -1,4 +1,4 @@
-NAME = static_cast
+NAME = convert
 CC = c++
 FLAGS = -Werror -Wall -Wextra -std=c++98 -MMD
 SRCS = main.cpp ScalarConverter.cpp

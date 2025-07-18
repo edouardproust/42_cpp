@@ -40,7 +40,7 @@ materia
 bureaucrat
 
 #cpp06
-static_cast
-reinterpret_cast
-dynamic_cast
+convert
+serialize
+dynamic
 
