@@ -1,43 +1,33 @@
 #include "iter.hpp"
-#include <iostream>
-#include <cmath>
-#include <string>
-#include <cstdlib>
 
-void	printSquare(int n)
+class Custom
 {
-	std::cout << n * n << std::endl;
+	double	_n;
+
+	public:
+		Custom(): _n(0) {}
+		Custom(double n): _n(n) {}
+		double get() const { return (_n); }
+};
+std::ostream& operator<<(std::ostream& o, Custom const& rhs) {
+	o << rhs.get(); return o;
 }
 
-void	printSqrt(float n)
-{
-	std::cout << std::sqrt(n) << std::endl;
+template< typename T >
+void print(T const& x) {
+	std::cout << x << " ";
 }
 
-void	capitalizeWord(std::string w)
-{
-	if (97 <= w[0] && w[0] <= 122) {
-		w[0] -= 32;
-	}
-}
-
-int	main()
-{
-	// printSquare(int)
-	int ints[5] = {1, 2, 3, 5, 8};
-	iter(ints, 5, printSquare);	
-
-	// printSqrt(float)	
-	float floats[5] = {12, 24, 36, 48, 50};
-	iter(floats, 5, printSqrt);
-
-	// capitalizeWord(std::string)
-	std::string words[6] = {"Hello,", "World!", "My", "name", "is", "Ed"};
-	iter(words, 6, capitalizeWord);
-	for (int i = 0; i < 6; ++i) {
-		std::cout << words[i] << (i < 5 ? " " : ".");
-	}
-	std::cout << std::endl;
-
+int	main() {
+	int			arr0[] = {0, 1, 2, 3, 4};
+	float		arr1[] = {0.0f, 1.1f, 2.2f, 3.3f, 4.4f};
+	std::string	arr2[] = {"Hello", "World", "I", "am", "Edouard"};
+	Custom		a, b(1.1), c(2.2), d(3.3), e(4.4);
+	Custom		arr3[5] = {a, b, c, d, e};
+	iter(arr0, 5, print); std::cout << std::endl;
+	iter(arr1, 5, print); std::cout << std::endl;
+	iter(arr2, 5, print); std::cout << std::endl;
+	iter(arr3, 5, print); std::cout << std::endl;
 	return (0);
 }
+

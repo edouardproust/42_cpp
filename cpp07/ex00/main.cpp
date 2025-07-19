@@ -1,34 +1,23 @@
 #include "whatever.hpp"
-#include <iostream>
-#include <string>
 
 class Awesome
 {
 	int _n;
 
 	public:
-
 		Awesome(void) : _n(0) {}
-		Awesome( int n ) : _n(n) {}
-		Awesome & operator= (Awesome & a) {
-			_n = a._n;
-			return (*this);
-		}
-
+		Awesome(int n) : _n(n) {}
 		bool operator>=(Awesome const& rhs) const {
 			return (this->_n >= rhs._n);
 		}
 		bool operator<=(Awesome const& rhs) const {
 			return (this->_n <= rhs._n);
 		}
-
-		int get_n() const { 
-			return (_n); 
-		}
+		int	getN() const { return (_n); }
 };
 
-std::ostream & operator<<(std::ostream & o, const Awesome &a) {
-	o << a.get_n(); return o;
+std::ostream& operator<<(std::ostream& o, const Awesome& rhs) {
+	o << rhs.getN(); return (o);
 }
 
 int	main()
