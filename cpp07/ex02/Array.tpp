@@ -30,7 +30,8 @@ Array<T>&	Array<T>::operator=(Array<T> const& rhs) {
 template <typename T>
 T&	Array<T>::operator[](unsigned int index) {
 	if (index >= _n) {
-		throw OutOfBoundsException();
+		throw std::out_of_range("Error: Trying to access an out-of-range index");
+		//throw OutOfBoundsException();
 	}
 	return (_arr[index]);
 }
@@ -38,10 +39,5 @@ T&	Array<T>::operator[](unsigned int index) {
 template <typename T>
 unsigned int	Array<T>::size() const {
 	return (_n);
-}
-
-template <typename T>
-char const*	Array<T>::OutOfBoundsException::what() const throw() {
-	return ("Error: Trying to access an out-of-bounds index");
 }
 

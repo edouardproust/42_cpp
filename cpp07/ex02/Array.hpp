@@ -2,6 +2,7 @@
 # define ARRAY_HPP
 
 #include <iostream>
+#include <stdexcept>
 
 template <typename T>
 class Array
@@ -19,11 +20,6 @@ class Array
 		T&			operator[](unsigned int index);
 
 		unsigned int	size() const;
-
-		class OutOfBoundsException: public std::exception {
-			public:
-				virtual char const*	what() const throw();
-		};
 };
 
 # include "Array.tpp"
