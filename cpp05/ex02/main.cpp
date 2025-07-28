@@ -26,9 +26,10 @@ int	main()
 		b12->promote();
 		b12->executeForm(*f1); // ok
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
+		std::cerr << "Error: " << e.what() << std::endl;
 		exit_code = 1;
 	}
+	std::cout << std::endl;
 
 	try {
 		b21->executeForm(*f2); // Form::NotSignedException
@@ -39,9 +40,10 @@ int	main()
 		b22->promote();
 		b22->executeForm(*f2); // ok
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
+		std::cerr << "Error: " << e.what() << std::endl;
 		exit_code = 1;
 	}
+	std::cout << std::endl;
 
 	try {
 		b31->executeForm(*f3); // Form::NotSignedException
@@ -52,7 +54,7 @@ int	main()
 		b32->promote();
 		b32->executeForm(*f3); // ok
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
+		std::cerr << "Error: " << e.what() << std::endl;
 		exit_code = 1;
 	}
 

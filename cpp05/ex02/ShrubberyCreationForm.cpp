@@ -23,7 +23,7 @@ ShrubberyCreationForm::~ShrubberyCreationForm() {}
 void	ShrubberyCreationForm::executeAction() const
 {
 	std::ofstream o((_target + "_shrubbery").c_str());
-	if (!o) { // operator! overload, equivalent to `!o.fail()`
+	if (!o) { // operator! overload, equivalent to `o.fail()`
 		std::cerr << "Error: opening file " << _target << "_shrubbery" << std::endl;
 		return;
 	}

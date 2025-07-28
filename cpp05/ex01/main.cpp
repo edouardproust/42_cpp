@@ -5,34 +5,34 @@ int	main()
 	int	exit_code = 0;
 
 	try {
-		Form f("28B", 0, 45);
+		Form f("28B", 0, 45); // error
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl; // should be print
+		std::cerr << "Error: " << e.what() << std::endl; //Form::GradeTooHighException
 		exit_code = 1;
 	}
 
 	try {
-		Form f("28B", 72, 151);
+		Form f("28B", 72, 151); // error
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
+		std::cerr << "Error: " << e.what() << std::endl; // Form::GradeTooLowException
 		exit_code = 1;
 	}
 	
 	try {
-		Form f("28B", 72, 45);
-		Bureaucrat b("Eugene", 80);
-		b.signForm(f);
+		Form f("28B", 72, 45); // ok
+		Bureaucrat b("Eugene", 80); // ok
+		b.signForm(f); // error
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl; // should be print
+		std::cerr << "Error: " << e.what() << std::endl; // Bureaucrat::GradeTooLowException
 		exit_code = 1;
 	}
 
 	try {
-		Form f("28B", 72, 45);
-		Bureaucrat b("Eugene", 45);
-		b.signForm(f);
+		Form f("28B", 72, 45); // ok
+		Bureaucrat b("Eugene", 72); // ok
+		b.signForm(f); // ok
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl; // should not be print
+		std::cerr << "Error: " << e.what() << std::endl; // not print
 		exit_code = 1;
 	}
 

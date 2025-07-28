@@ -38,28 +38,28 @@ int Bureaucrat::getGrade() const
 
 void	Bureaucrat::demote()
 {
-	_grade++;
-	if (_grade > 150) {
+	if (_grade >= 150) {
 		throw GradeTooLowException();
 	}
+	_grade++;
 }
 
 void	Bureaucrat::promote()
 {
-	_grade--;
-	if (_grade < 1) {
+	if (_grade <= 1) {
 		throw GradeTooHighException();
 	}
+	_grade--;
 }
 
 char const*	Bureaucrat::GradeTooLowException::what() const throw()
 {
-	return ("Error: bureaucrat's grade is too low");
+	return ("bureaucrat's grade is too low");
 }
 
 char const*	Bureaucrat::GradeTooHighException::what() const throw()
 {
-	return ("Error: bureaucrat's grade is too high");
+	return ("bureaucrat's grade is too high");
 }
 
 std::ostream&	operator<<(std::ostream& lhs, Bureaucrat const& rhs)
