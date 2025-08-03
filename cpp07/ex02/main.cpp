@@ -34,7 +34,7 @@ int	main()
 	Array<int> const arr4 = arr3;
 	try {
 		std::cout << "arr4.size() = " << arr4.size() << std::endl;
-		std::cout << "arr3[0] = " << arr4[0] << std::endl;
+		std::cout << "arr4[0] = " << arr4[0] << std::endl;
 		//arr4[0] = 1337; // compilation error
 	} catch (std::exception& e) {
 		std::cout << e.what() << std::endl;
