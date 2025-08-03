@@ -7,8 +7,8 @@
 template <typename T>
 class Array
 {
-	unsigned int	_n;
-	T*				_arr;
+	unsigned int	_size;
+	T*				_items;
 
 	public:
 		Array<T>();
@@ -18,6 +18,7 @@ class Array
 
 		Array<T>&	operator=(Array<T> const& rhs);
 		T&			operator[](unsigned int index);
+		T const&	operator[](unsigned int index) const;
 
 		unsigned int	size() const;
 };

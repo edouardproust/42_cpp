@@ -1,27 +1,27 @@
 template <typename T>
-Array<T>::Array(): _n(0), _arr(NULL) {}
+Array<T>::Array(): _size(0), _items(NULL) {}
 
 template <typename T>
-Array<T>::Array(unsigned int n): _n(n), _arr(n ? new T[n]() : NULL) {}
+Array<T>::Array(unsigned int n): _size(n), _items(n ? new T[n]() : NULL) {}
 
 template <typename T>
-Array<T>::Array(Array<T> const& src): _n(src._n), _arr(new T[src._n]) {
-	for (int i = 0; i < _n; ++i) {
-		_arr[i] = src._arr[i];
+Array<T>::Array(Array<T> const& src): _size(src._size), _items(new T[src._size]) {
+	for (unsigned int i = 0; i < _size; ++i) {
+		_items[i] = src._items[i];
 	}
 }
 
 template <typename T>
 Array<T>::~Array() {
-	delete[] _arr;
+	delete[] _items;
 }
 
 template <typename T>
 Array<T>&	Array<T>::operator=(Array<T> const& rhs) {
 	if (this != &rhs) {
-		_n = rhs._n;
-		for (int i = 0; i < _n; ++i) {
-			_arr[i] = rhs._arr[i];
+		_size = rhs._size;
+		for (unsigned int i = 0; i < _size; ++i) {
+			_items[i] = rhs._items[i];
 		}
 	}
 	return (*this);
@@ -29,15 +29,22 @@ Array<T>&	Array<T>::operator=(Array<T> const& rhs) {
 
 template <typename T>
 T&	Array<T>::operator[](unsigned int index) {
-	if (index >= _n) {
-		throw std::out_of_range("Error: Trying to access an out-of-range index");
-		//throw OutOfBoundsException();
+	if (index >= _size) {
+		throw std::out_of_range("Invalid index");
 	}
-	return (_arr[index]);
+	return (_items[index]);
+}
+
+template <typename T>
+T const&	Array<T>::operator[](unsigned int index) const {
+	if (index >= _size) {
+		throw std::out_of_range("Invalid index");
+	}
+	return (_items[index]);
 }
 
 template <typename T>
 unsigned int	Array<T>::size() const {
-	return (_n);
+	return (_size);
 }
 
