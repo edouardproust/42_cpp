@@ -1,0 +1,14 @@
+*.out
+*.o
+*.log
+README.md
+.gitignore
+subject
+*.pdf
+.vscode
+~*
+*.swo
+*.swp
+
+animal
+materia
