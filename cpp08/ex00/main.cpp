@@ -9,8 +9,7 @@ void	printResult(std::string containerName, Container c, int needle) {
 	typedef typename Container::const_iterator Iterator;
 	std::cout << containerName << ": ";
 	if (!c.empty()) {
-		Iterator last = c.end();
-		--last;
+		Iterator last = --c.end(); // tip for getting a pointer to the last element
 		for (Iterator it = c.begin(); it != c.end(); ++it) {
 			std::cout << *it << (it != last ? ", " : "");
 		}
