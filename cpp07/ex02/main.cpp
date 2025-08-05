@@ -2,6 +2,7 @@
 
 int	main()
 {
+	// Empty array
 	Array<int> arr1;
 	try {
 		std::cout << "arr1.size() = " << arr1.size() << std::endl;
@@ -10,6 +11,7 @@ int	main()
 		std::cout << e.what() << std::endl;
 	}
 
+	// Array with content
 	Array<int> arr2(2);
 	try {
 		std::cout << "arr2.size() = " << arr2.size() << std::endl;
@@ -18,6 +20,7 @@ int	main()
 		std::cout << e.what() << std::endl;
 	}
 
+	// Array with content + update data (using [])
 	Array<int> arr3(3);
 	try {
 		arr3[0] = 42;
@@ -30,7 +33,7 @@ int	main()
 		std::cout << e.what() << std::endl;
 	}
 
-	// const array
+	// Const array with content
 	Array<int> const arr4 = arr3;
 	try {
 		std::cout << "arr4.size() = " << arr4.size() << std::endl;
