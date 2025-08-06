@@ -2,17 +2,15 @@
 
 #include <iostream> // std::cout, std::endl,...
 #include <vector> // std::vector<T>
-#include <set> // std:set<T>
 #include <iterator> // std::distance()
 #include <stdexcept> // std::runtime_error()
-#include <algorithm> // std::min_element(), std::max_element()
+#include <algorithm> // std::sort(), std::min_element(), std::max_element()
 #include <cmath> // std::abs()
 #include <limits> // std::numeric_limits<T>::min(),max()
 
 typedef std::vector<int>					Nbs;
-typedef std::vector<int>::const_iterator	NbsIt;
-typedef std::set<int>						NbsSet;
-typedef std::set<int>::const_iterator		NbsSetIt;
+typedef std::vector<int>::iterator			NbsIt;
+typedef std::vector<int>::const_iterator	NbsConstIt;
 
 class Span
 {
@@ -35,7 +33,7 @@ class Span
 		template <typename Iterator>
 		void			addNumbers(Iterator begin, Iterator end);
 
-		unsigned int	shortestSpan() const;
+		unsigned int	shortestSpan();
 		unsigned int	longestSpan() const;
 };
 

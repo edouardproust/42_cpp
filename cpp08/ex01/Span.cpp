@@ -29,7 +29,7 @@ void	Span::addNumber(int n) {
 	if (_numbers.size() < _size) {
 		_numbers.push_back(n);
 	} else {
-		throw std::runtime_error("Container is full");
+		throw std::runtime_error("Add number: container is full");
 	}
 }
 
@@ -40,17 +40,20 @@ void	Span::addNumbers(Iterator begin, Iterator end) {
 			this->addNumber(*it);
 		}
 	} else {
-		throw std::runtime_error("Container is too small");
+		throw std::runtime_error("Add numbers: container is too small");
 	}
 }
 
-unsigned int	Span::shortestSpan() const {
+unsigned int	Span::shortestSpan() {
+	if (_size < 2) {
+		throw std::runtime_error("impossible");
+	}
 	unsigned int shortest = std::numeric_limits<int>::max();
-	NbsSet const s(_numbers.begin(), _numbers.end());
-	NbsSetIt current = s.begin();
-	NbsSetIt next = ++s.begin(); // Tip to get second element
-	while (next != s.end()) {
-		unsigned int tmp = std::abs(*current - *next);
+	std::sort(_numbers.begin(), _numbers.end());
+	NbsIt current = _numbers.begin();
+	NbsIt next = ++_numbers.begin(); // Tip to get second element
+	while (next != _numbers.end()) {
+		unsigned int tmp = std::abs(*next - *current);
 		if (tmp < shortest) {
 			shortest = tmp;
 		}
@@ -61,8 +64,11 @@ unsigned int	Span::shortestSpan() const {
 }
 
 unsigned int	Span::longestSpan() const {
-	NbsIt min = std::min_element(_numbers.begin(), _numbers.end());
-	NbsIt max = std::max_element(_numbers.begin(), _numbers.end());
+	if (_size < 2) {
+		throw std::runtime_error("impossible");
+	}
+	NbsConstIt min = std::min_element(_numbers.begin(), _numbers.end());
+	NbsConstIt max = std::max_element(_numbers.begin(), _numbers.end());
 	return (std::abs(*max - *min));
 }
 

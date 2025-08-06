@@ -1,17 +1,17 @@
 NAME = easyfind
 CC = c++
-FLAGS = -Wall -Werror -Wextra -std=c++98
+FLAGS = -Wall -Werror -Wextra -std=c++98 -MMD
 SRCS = main.cpp
-HEADERS = easyfind.hpp
 OBJS_DIR = obj
 OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
+DEPS = $(OBJS:.o=.d)
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(CC) $^ -o $@
 
-$(OBJS_DIR)/%.o: %.cpp $(HEADERS) Makefile
+$(OBJS_DIR)/%.o: %.cpp Makefile
 	mkdir -p $(OBJS_DIR)
 	$(CC) -c $< -o $@ $(FLAGS)
 
@@ -22,5 +22,7 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
+-include $(DEPS)
 
 .PHONY: all, clean fclean re
