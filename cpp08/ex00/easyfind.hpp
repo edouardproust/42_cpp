@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <sstream>
 
-template <typename Container>
-int	easyfind (Container&, int);
+template <typename T>
+int	easyfind (T&, int);
 
 class NotFoundException: public std::exception {
 	public:

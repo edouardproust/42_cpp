@@ -31,7 +31,7 @@ int main(int ac, char** av) {
 	std::vector<int>	v;
 	std::set<int>		s;
 
-	for (int i = 0; i < ac - 1; ++i) {
+	for (int i = 1; i < ac - 1; ++i) {
 		int	n = atoi(av[i]);
 		v.push_back(n);
 		s.insert(n);

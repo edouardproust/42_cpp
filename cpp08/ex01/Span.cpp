@@ -48,8 +48,7 @@ unsigned int	Span::shortestSpan() const {
 	unsigned int shortest = std::numeric_limits<int>::max();
 	NbsSet const s(_numbers.begin(), _numbers.end());
 	NbsSetIt current = s.begin();
-	NbsSetIt next = s.begin();
-	++next;
+	NbsSetIt next = ++s.begin(); // Tip to get second element
 	while (next != s.end()) {
 		unsigned int tmp = std::abs(*current - *next);
 		if (tmp < shortest) {

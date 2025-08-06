@@ -1,5 +1,7 @@
-template <typename Container>
-int	easyfind(Container& c, int needle) {
+#pragma once
+
+template <typename T>
+int	easyfind(T& c, int needle) {
 	if (std::find(c.begin(), c.end(), needle) != c.end()) {
 		return needle;
 	} else {
