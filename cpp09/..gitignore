@@ -1,0 +1,15 @@
+obj
+subject
+*.o
+*.d
+*.swp
+*.swo
+*.out
+*.pdf
+*.log
+.~*
+.vscode
+.gitignore
+README.md
+
+btc

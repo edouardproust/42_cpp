@@ -8,6 +8,7 @@
 *.replace
 test
 *.bak
+.~*
 
 #cpp00
 megaphone
@@ -54,3 +55,6 @@ array
 easyfind
 span
 mutant_stack
+
+#cpp09
+btc
