@@ -5,7 +5,11 @@ BitcoinExchange::BitcoinExchange() {}
 BitcoinExchange::BitcoinExchange(char const* dataPath, char const* inputPath)
 : _dataPath(dataPath), _inputPath(inputPath)
 {
-	_parseData();
+	try {
+		_parseData();
+	} catch (std::exception& e) {
+		std::cerr << e.what() << std::endl;
+	}
 }
 
 BitcoinExchange::BitcoinExchange(BitcoinExchange const& src)
