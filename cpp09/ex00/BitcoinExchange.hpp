@@ -20,19 +20,18 @@ class BitcoinExchange
 	BitcoinExchange();
 
 	void			_parseData();
-	double			_getResult(std::string const& date, double const& value) const;
+	double			_getResult(std::string const&, double const&) const;
 
 	static bool		_isLineWithDate(std::string const& str);
-	static bool		_splitLine(std::string const& line, std::string const& sep,
-						std::string& lhs, std::string& rhs);
-	static void		_checkDate(std::string const& s);
-	static void		_checkInputLineValue(double const& value);
+	static bool		_splitLine(std::string const&, std::string const&, std::string&, std::string&);
+	static void		_checkDate(std::string const&);
+	static void		_checkInputLineValue(double const&);
 
 	public:
 
-		BitcoinExchange(char const* dataPath, char const* inputPath);
-		BitcoinExchange(BitcoinExchange const& src);
-		BitcoinExchange&	operator=(BitcoinExchange const& rhs);
+		BitcoinExchange(char const*, char const*);
+		BitcoinExchange(BitcoinExchange const&);
+		BitcoinExchange&	operator=(BitcoinExchange const&);
 		~BitcoinExchange();
 
 		void	printOutput() const;
