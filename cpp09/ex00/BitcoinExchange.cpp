@@ -15,12 +15,12 @@ BitcoinExchange::BitcoinExchange(char const* dataPath, char const* inputPath)
 BitcoinExchange::BitcoinExchange(BitcoinExchange const& src)
 : _dataPath(src._dataPath), _inputPath(src._inputPath), _data(src._data) {}
 
-BitcoinExchange&	BitcoinExchange::BitcoinExchange::operator=(BitcoinExchange const& rhs)
+BitcoinExchange&	BitcoinExchange::BitcoinExchange::operator=(BitcoinExchange const& other)
 {
-	if (this != &rhs) {
-		_dataPath = rhs._dataPath;
-		_inputPath = rhs._inputPath;
-		_data = rhs._data; // Use of std::map's operator=()
+	if (this != &other) {
+		_dataPath = other._dataPath;
+		_inputPath = other._inputPath;
+		_data = other._data; // Use of std::map's operator=()
 	}
 	return *this;
 }

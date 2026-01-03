@@ -25,6 +25,7 @@ class RPN
 {
 	std::stack<int>	_stack;
 
+	// TODO Make canonical
 	RPN();
 	RPN(RPN const&);
 	RPN&	operator=(RPN const&);
@@ -34,7 +35,7 @@ class RPN
 	void	_pushOperatorResult(std::string const&);
 
 	public:
-	
+
 		RPN(std::string const&);
 		~RPN();
 

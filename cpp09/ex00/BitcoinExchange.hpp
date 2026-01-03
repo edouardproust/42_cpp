@@ -9,6 +9,7 @@
 #include <stdlib.h> // strtod()
 #include <cstdlib> // std::atof()
 
+// TODO: fevrier annees bissextiles!!!
 class BitcoinExchange
 {
 	typedef std::map<std::string, double>	Data;
@@ -16,7 +17,7 @@ class BitcoinExchange
 	char const*	_dataPath;
 	char const*	_inputPath;
 	Data		_data;
-	
+
 	BitcoinExchange();
 
 	void			_parseData();
