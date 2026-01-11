@@ -1,53 +1,41 @@
 #ifndef P_MERGE_ME_HPP
 #define P_MERGE_ME_HPP
 
-#include <string>
-#include <iostream> // std::ostream, std::cout, std::endl, std::fixed
-#include <vector>
-#include <sstream>
-#include <limits>
+#include <iostream>
 #include <stdexcept>
-#include <sys/time.h>
-#include <iomanip> // std::fixed, std::setprecision
-#include <algorithm> // std::lower_bound, std::upper_bound
-
-#ifndef DEBUG
-#define DEBUG 1
-#endif
+#include <limits>
+#include <cstdlib>
+#include <vector>
+#include <deque>
+#include <algorithm>
+#include <cmath>
 
 class PmergeMe
 {
-	bool						_isSorted;
-	std::vector<int>			_unsorted;	// original unsorted numbers
-	std::vector<int>			_bigNbs;	// main chain (working data)
-	std::vector<int>			_smallNbs;	// pend to insert into main chain
-	struct timeval				_startTime;	// timing: algorithm start
-	struct timeval				_endTime;	// timing: algorithm end
-
-	void	_mergeInsertionSort();
-	void	_splitData();
-	void	_insertSmallNbs();
+	template <typename Iter>
+	static bool		_compareIters(Iter const&, Iter const&);
+	static size_t	_getJacobsthalNumber(size_t);
 
 	public:
 
+		static size_t	totalComparisons;
+
 		PmergeMe();
-		PmergeMe(PmergeMe const&);
-		PmergeMe&	operator=(PmergeMe const&);
 		~PmergeMe();
 
-		void	setUnsorted(int, char**);
-		void	sort();
-
-		std::vector<int> const&			getUnsorted() const;
-		std::vector<int> const&			getSorted() const;
-		std::vector<int> const&			getBigNbs() const;
-		std::vector<int> const&			getSmallNbs() const;
-		double							getElapsedTime() const;
+		static void			validateArgs(int, char**);
+		static double		fjUpperBound(int);
+		std::vector<int>	argsToVector(int, char**);
+		std::deque<int>		argsToDeque(int, char**);
+		void				mergeInsertionSort(std::vector<int>&, size_t);
+		void				mergeInsertionSort(std::deque<int>&, size_t);
+		size_t				getTotalComparisons() const;
 };
 
-// Print
-
-std::ostream&	operator<<(std::ostream&, std::vector<int> const&);
-std::ostream&	operator<<(std::ostream&, PmergeMe const&);
+template <typename Iter>
+bool	PmergeMe::_compareIters(Iter const& a, Iter const& b) {
+	totalComparisons++;
+    return *a < *b;
+}
 
 #endif

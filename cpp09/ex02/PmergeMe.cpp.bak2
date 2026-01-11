@@ -1,0 +1,297 @@
+#include "PmergeMe.hpp"
+
+PmergeMe::PmergeMe()
+: _isSorted(false)
+, _unsorted() // empty in recursive instances (not used)
+, _bigNbs()
+, _smallNbs()
+, _startTime()
+, _endTime()
+{}
+
+PmergeMe::PmergeMe(PmergeMe const& other)
+: _isSorted(other._isSorted)
+, _unsorted(other._unsorted)
+, _bigNbs(other._bigNbs)
+, _smallNbs(other._smallNbs)
+, _startTime()
+, _endTime()
+{}
+
+PmergeMe&	PmergeMe::operator=(PmergeMe const& other)
+{
+	if (this != &other) {
+		_isSorted = other._isSorted;
+		_unsorted = other._unsorted;
+		_bigNbs = other._bigNbs;
+		_smallNbs = other._smallNbs;
+		_startTime = timeval();
+		_endTime = timeval();
+	}
+	return *this;
+}
+
+PmergeMe::~PmergeMe()
+{}
+
+void	PmergeMe::setUnsorted(int n, char** nbs)
+{
+	if (n <= 0)
+		throw std::runtime_error("Usage: ./PmergeMe <positive_integer1> [positive_integer2 ... positive_integerN]");
+
+	for (int i = 0; i < n; ++i) {
+		std::string s = nbs[i];
+		if (s.empty())
+			throw std::runtime_error("An integer is an empty string");
+
+		// Check that all chars are digits
+		for (size_t j = 0; j < s.size(); ++j) {
+			if (!std::isdigit(static_cast <unsigned char>(s[j])))
+				throw std::runtime_error("Invalid character in number: " + s);
+		}
+
+		unsigned long tmp = 0;
+		std::stringstream ss(s);
+		ss >> tmp;
+
+		// Check int overflow
+		if (ss.fail() || !ss.eof() || tmp > static_cast<unsigned long>(std::numeric_limits<int>::max()))
+			throw std::runtime_error("Integer overflow: " + ss.str());
+
+		_unsorted.push_back(tmp);
+	}
+}
+
+void	PmergeMe::sort()
+{
+	if (_unsorted.empty())
+		return;
+
+	gettimeofday(&_startTime, NULL);
+	_mergeInsertionSort();
+	_isSorted = true;
+	gettimeofday(&_endTime, NULL);
+}
+
+/**
+ * Ford–Johnson merge-insertion sort (recursive).
+ */
+void	PmergeMe::_mergeInsertionSort()
+{
+	if (_unsorted.size() <= 1)
+		return;
+
+	// 1. Split input into 2 chains: _bigNbs (larger element of each pair) and _smallNbs (the smaller one)
+	_splitData();
+
+	// 2. If _bigNbs has more than 1 element, recursively sort it
+	if (_bigNbs.size() > 1) {
+		PmergeMe recursiveSort;
+		recursiveSort._unsorted = _bigNbs; // deep copy of _bigNbs (parent level) into _unsorted (current level)
+		recursiveSort._mergeInsertionSort(); // <-- Recursive descent
+		_bigNbs = recursiveSort._bigNbs; // _bigNbs is now sorted (after recursion unwind: see step 2. below)
+		// (Here, in the deeper level of recursion (_bigNbs.size() == 1), _bigNbs ends up containing only the biggest element of the original unsorted list)
+	}
+
+	// 3. Recursion unwind: each level inserts its pending _smallNbs into the already sorted _bigNbs.
+	_insertSmallNbs();
+
+	// At this point, _bigNbs is sorted for this instance of PmergeMe.
+}
+
+/**
+ * Ford–Johnson step #1 (inside recursive sort).
+ * Split _unsorted into two chains:
+ * - the larger elements of each pair (_bigNbs) -> main chain (recursively sorted in _mergeInsertionSort())
+ * - the smaller ones (_smallNbs) -> pending insertions
+ */
+void	PmergeMe::_splitData()
+{
+	for (size_t i = 0; i + 1 < _unsorted.size(); i += 2) { // prevents underflow in case _unsorted.size() == 0
+		// chains
+		int big = std::max(_unsorted[i], _unsorted[i + 1]);
+		int small = std::min(_unsorted[i], _unsorted[i + 1]);
+		_bigNbs.push_back(big);
+		_smallNbs.push_back(small);
+		// pairing
+		IdxPair idx;
+		idx.small = _smallNbs.size() - 1;
+		idx.big = _bigNbs.size() - 1;
+		_idxPairs.push_back(idx);
+	}
+	// straggler
+	if (_unsorted.size() % 2 != 0) {
+		_smallNbs.push_back(_unsorted.back());
+		// (straggler is not added into _pairing)
+	}
+}
+
+// TODO
+/**
+ * Ford-Johnson step #2:
+ * Insert small numbers into the main chain (big numbers),
+ * using Jacobsthal order and binary search.
+ */
+void	PmergeMe::_insertSmallNbs()
+{
+	if (_smallNbs.empty())
+		return;
+
+	std::cerr << "theMain: " << _bigNbs << std::endl; // DEBUG
+	std::cerr << "thePend: " << _smallNbs << std::endl; // DEBUG
+
+	std::vector<size_t> insertOrder = _getJacobsthalOrder(_smallNbs.size());
+
+	// DEBUG
+	std::cerr << "Jacobsthal order: ";
+	for (size_t i = 0; i < insertOrder.size(); ++i) {
+		std::cerr << insertOrder[i] << " ";
+	}
+	std::cerr << std::endl;
+	// DEBUG END
+
+	// Insert each smallNb into _bigNbs using binary search
+	for (size_t i = 0; i < insertOrder.size(); ++i) {
+		int toInsert = _smallNbs[insertOrder[i]];
+		std::cerr << "DEBUG: " << insertOrder[i] << " " << toInsert << std::endl; //DEBUG
+		// std::lower_bound is a Binary Search
+		std::vector<int>::iterator pos = std::lower_bound(_bigNbs.begin(), _bigNbs.end(), toInsert);
+		_bigNbs.insert(pos, toInsert);
+	}
+}
+
+/**
+ * Generate insertion order for Ford-Johnson algorithm using Jacobsthal numbers.
+ *
+ * The order minimizes comparisons when inserting pendants into the main chain.
+ *
+ * Generation rule:
+ * 1. Start with index 0
+ * 2. For each Jacobsthal number J[i] (where i >= 2):
+ *    - Insert indices from J[i]-1 down to J[i-1] (descending order)
+ * 3. After using all Jacobsthal numbers:
+ *    - Insert remaining indices from pendSize-1 down to last Jacobsthal number
+ *
+ * Example for pendSize=7:
+ * Jacobsthal numbers up to pendSize: [1, 3, 5]
+ * Generated order (0-based): [0, 2, 1, 4, 3, 6, 5]
+ * Which corresponds to (1-based):   [1, 3, 2, 5, 4, 7, 6]
+ */
+std::vector<size_t>	PmergeMe::_getJacobsthalOrder(size_t pendSize)
+{
+	std::vector<size_t> order;
+
+	if (pendSize == 0)
+		return order;
+	order.push_back(0);
+	if (pendSize == 1)
+		return order;
+	if (pendSize == 2) {
+		// If there are 2 numbers in the pend, insert them in ascending order
+		order.push_back(1);
+		return order;
+	}
+
+	// If there are more than 2 numbers in the pend -> use Jacobsthal order:
+
+	// 1. Inserts indices from J(k)-1 down to J(k-1) in descending order
+	std::vector<size_t> jacobsthal = _getJacobsthalNbs(pendSize);
+	for (size_t i = 2; i < jacobsthal.size(); ++i) {
+		for (size_t j = jacobsthal[i] - 1; j >= jacobsthal[i - 1]; j--)
+			order.push_back(j);
+	}
+	// 2. Append remaining indices after the last Jacobsthal in descending order
+	if (jacobsthal.back() < pendSize) {
+		for (size_t j = pendSize - 1; j >= jacobsthal.back(); j--)
+			order.push_back(j);
+	}
+
+	return order;
+}
+
+/**
+ * Get a list of Jacobsthal numbers that are smaller or equal to `pendSize`.
+ *
+ * - Jacobsthal sequence recurrence relation: `J(n) = J(n-1) + 2 * J(n-2)`
+ * - First numbers: `0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923, 21845, 43691, 87381, 174763, 349525, …`
+ */
+std::vector<size_t>	PmergeMe::_getJacobsthalNbs(size_t pendSize)
+{
+	std::vector<size_t> sequence;
+	if (pendSize == 0) return sequence;
+	sequence.push_back(0);
+	if (pendSize == 1) return sequence;
+	sequence.push_back(1);
+
+	while (true) {
+		size_t nb = sequence[sequence.size() - 1] + 2 * sequence[sequence.size() - 2];
+		if (nb <= pendSize)
+			sequence.push_back(nb);
+		else break;
+	}
+
+	return sequence;
+}
+
+// GETTERS
+
+std::vector<int> const&	PmergeMe::getUnsorted() const
+{
+	return _unsorted;
+}
+
+std::vector<int> const&	PmergeMe::getSorted() const
+{
+	return _bigNbs;
+}
+
+std::vector<int> const&	PmergeMe::getBigNbs() const
+{
+	return _bigNbs;
+}
+
+std::vector<int> const&	PmergeMe::getSmallNbs() const
+{
+	return _smallNbs;
+}
+
+double	PmergeMe::getElapsedTime() const
+{
+	long sec = _endTime.tv_sec - _startTime.tv_sec;
+	long usec = _endTime.tv_usec - _startTime.tv_usec;
+	return sec * 1e6 + usec;
+}
+
+// PRINT
+
+std::ostream&	operator<<(std::ostream& os, PmergeMe const& pmm)
+{
+	os << "Before: " << pmm.getUnsorted() << "\n";
+	os << "After: " << pmm.getSorted() << "\n";
+
+	// Elasped time
+	os << "Time to process a range of " << pmm.getUnsorted().size() << " elements with std::vector : "
+		<< std::fixed << std::setprecision(5) << pmm.getElapsedTime() << " us";
+
+	return os;
+}
+
+std::ostream&	operator<<(std::ostream& os, std::vector<int> const& numbers)
+{
+	for(size_t i = 0; i < numbers.size(); ++i) {
+		os << numbers[i];
+		if (i != numbers.size() - 1)
+			os << " ";
+	}
+	return os;
+}
+
+std::ostream&	operator<<(std::ostream& os, std::vector<IdxPair> const& pairs)
+{
+	for(size_t i = 0; i < pairs.size(); ++i) {
+		os <<  "{" << pairs[i].small << ", " << pairs[i].big << "}";
+		if (i != pairs.size() - 1)
+			os << " ";
+	}
+	return os;
+}

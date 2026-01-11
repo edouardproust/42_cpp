@@ -1,201 +1,283 @@
 #include "PmergeMe.hpp"
 
+size_t	PmergeMe::totalComparisons = 0;
+
 PmergeMe::PmergeMe()
-: _isSorted(false)
-, _unsorted() // empty in recursive instances (not used)
-, _bigNbs()
-, _smallNbs()
-, _startTime()
-, _endTime()
 {}
-
-PmergeMe::PmergeMe(PmergeMe const& other)
-: _isSorted(other._isSorted)
-, _unsorted(other._unsorted)
-, _bigNbs(other._bigNbs)
-, _smallNbs(other._smallNbs)
-, _startTime()
-, _endTime()
-{}
-
-PmergeMe&	PmergeMe::operator=(PmergeMe const& other)
-{
-	if (this != &other) {
-		_isSorted = other._isSorted;
-		_unsorted = other._unsorted;
-		_bigNbs = other._bigNbs;
-		_smallNbs = other._smallNbs;
-		_startTime = timeval();
-		_endTime = timeval();
-	}
-	return *this;
-}
 
 PmergeMe::~PmergeMe()
 {}
 
-void	PmergeMe::setUnsorted(int n, char** nbs)
+/**
+ * Theoretical upper bound of comparisons for Ford-Johnson algorithm.
+ *
+ * Formula: n*log2(n) - 1.329n
+ */
+double	PmergeMe::fjUpperBound(int n) {
+    return round(n * (std::log(n) / std::log(2.0)) - 1.329 * n);
+}
+
+/**
+ * @note May throw an exception.
+ */
+void	PmergeMe::validateArgs(int ac, char** av)
 {
-	if (n <= 0)
-		throw std::runtime_error("Usage: ./PmergeMe <positive_integer1> [positive_integer2 ... positive_integerN]");
+	if (ac < 2)
+		throw std::invalid_argument("Usage: ./PmergeMe <positive_integer1> [positive_integer2 ... positive_integerN]");
 
-	for (int i = 0; i < n; ++i) {
-		std::string s = nbs[i];
-		if (s.empty())
-			throw std::runtime_error("An integer is an empty string");
-
-		// Check that all chars are digits
-		for (size_t j = 0; j < s.size(); ++j) {
-			if (!std::isdigit(static_cast <unsigned char>(s[j])))
-				throw std::runtime_error("Invalid character in number: " + s);
+	// Validate each arg
+	for (int i = 1; i < ac; ++i) {
+		if (!av[i] || av[i][0] == '\0')
+			throw std::invalid_argument("Empty argument");
+		// Validate characters (only digits allowed: "-", "+", etc. are forbidden)
+		for (int j = 0; av[i][j]; ++j) {
+			if (!std::isdigit(static_cast<unsigned char>(av[i][j]))) // static_cast to prevent UB is char is negative
+				throw std::invalid_argument("Invalid character in argument");
 		}
-
-		unsigned long tmp = 0;
-		std::stringstream ss(s);
-		ss >> tmp;
-
-		// Check int overflow
-		if (ss.fail() || !ss.eof() || tmp > static_cast<unsigned long>(std::numeric_limits<int>::max()))
-			throw std::runtime_error("Integer overflow: " + ss.str());
-
-		_unsorted.push_back(tmp);
+		// Validate overflow
+		long nb = std::strtol(av[i], NULL, 10); // no need to check `*endptr != '\0'`: we have only digits at this point
+		if (nb > std::numeric_limits<int>::max()) // no need to check `errno == ERANGE`: nb is always positive at this point
+			throw std::out_of_range("Number too large");
 	}
 }
 
-void	PmergeMe::sort()
+std::vector<int>	PmergeMe::argsToVector(int ac, char** av)
 {
-	if (_unsorted.empty())
-		return;
+	std::vector<int> vec;
+	vec.reserve(ac - 1);
+	for (int i = 1; i < ac; ++i)
+		vec.push_back(static_cast<int>(std::strtol(av[i], NULL, 10)));
+	return vec;
+}
 
-	gettimeofday(&_startTime, NULL);
-	_mergeInsertionSort();
-	_isSorted = true;
-	gettimeofday(&_endTime, NULL);
+std::deque<int>	PmergeMe::argsToDeque(int ac, char** av)
+{
+	std::deque<int> deq;
+	for (int i = 1; i < ac; ++i)
+		deq.push_back(static_cast<int>(std::strtol(av[i], NULL, 10)));
+	return deq;
 }
 
 /**
- * Ford–Johnson merge-insertion sort (recursive).
+ * Get the nth Jacobsthal number.
  */
-void	PmergeMe::_mergeInsertionSort()
+size_t	PmergeMe::_getJacobsthalNumber(size_t n)
 {
-	if (_unsorted.size() <= 1)
-		return;
-
-	// 1. Split input into 2 chains: _bigNbs (larger element of each pair) and _smallNbs (the smaller one)
-	_splitData();
-
-	// 2. If _bigNbs has more than 1 element, recursively sort it
-	if (_bigNbs.size() > 1) {
-		PmergeMe recursiveSort;
-		recursiveSort._unsorted = _bigNbs; // deep copy of _bigNbs (parent level) into _unsorted (current level)
-
-		if (DEBUG) std::cerr << "Recursion descent:\n" << recursiveSort << "\n" << std::endl;
-
-		recursiveSort._mergeInsertionSort(); // <-- Recursive descent
-		_bigNbs = recursiveSort._bigNbs; // _bigNbs is now sorted (after recursion unwind: see step 2. below)
-		// (Here, in the deeper level of recursion (_bigNbs.size() == 1), _bigNbs ends up containing only the biggest element of the original unsorted list)
-
-		if (DEBUG) std::cerr << "Recursion unwind:\n" << recursiveSort << "\n" << std::endl;
-	}
-
-	// 3. Recursion unwind: each level inserts its pending _smallNbs into the already sorted _bigNbs.
-	_insertSmallNbs();
-
-	// At this point, _bigNbs is sorted for this instance of PmergeMe.
+	return (std::pow(2, n) - std::pow(-1, n)) / 3;
 }
 
 /**
- * Ford–Johnson step #1 (inside recursive sort).
- * Split _unsorted into two chains:
- * - the larger elements of each pair (_bigNbs) -> main chain (recursively sorted in _mergeInsertionSort())
- * - the smaller ones (_smallNbs) -> pending insertions
+ * [VECTOR VERSION] Merge-Insertion Sort algorithm (Ford-Johnson) on a vector of ints.
+ *
+ * @note Used terminology:
+ * - A "pair" contains is made of 2 "blocks".
+ * - A block can contain numbers or sub-blocks.
  */
-void	PmergeMe::_splitData()
+void	PmergeMe::mergeInsertionSort(std::vector<int>& v, size_t intsPerBlock)
 {
-	for (size_t i = 0; i + 1 < _unsorted.size(); i += 2) { // prevents underflow in case _unsorted.size() == 0
-		// chains
-		int big = std::max(_unsorted[i], _unsorted[i  + 1]);
-        int small = std::min(_unsorted[i], _unsorted[i  + 1]);
-		_bigNbs.push_back(big);
-		_smallNbs.push_back(small);
-	}
-	// straggler
-	if (_unsorted.size() % 2 != 0) {
-		_smallNbs.push_back(_unsorted.back());
-		// (straggler is not added into _pairing)
-	}
-}
+	totalComparisons = 0; // reset counter
+	typedef std::vector<int>::iterator Iter;
+	size_t nbOfBlocks = v.size() / intsPerBlock;
 
-// TODO
-/**
- * Ford-Johnson step #2:
- * Insert small numbers into the main chain (big numbers),
- * using Jacobsthal order and binary search.
- */
-void	PmergeMe::_insertSmallNbs()
-{
-	if (_smallNbs.empty())
+	// Exit case
+	if (nbOfBlocks < 2) // Check that we can make at least one pair of blocks
 		return;
 
-	// Insert each smallNb into _bigNbs using binary search
-	for (size_t i = 0; i < _smallNbs.size(); ++i) {
+	bool hasOddNbOfBlocks = nbOfBlocks % 2 == 1; // ints that cannot even form a block are ignored in this count
+	Iter firstInt = v.begin();
+	Iter endOflastBlock = firstInt + nbOfBlocks * intsPerBlock;
+	Iter endOflastPairableBlock = endOflastBlock - hasOddNbOfBlocks * intsPerBlock;
 
-		// std::upper_bound is a Binary Search
-		// (we use upper_bound to maintain stability: equal elements are inserted after existing ones)
-		std::vector<int>::iterator pos = std::upper_bound(_bigNbs.begin(), _bigNbs.end(), _smallNbs[i]);
-		_bigNbs.insert(pos, _smallNbs[i]);
+	/**
+	 * 1. Order pairs of block recursively.
+	 */
+
+	for (Iter it = firstInt; it != endOflastPairableBlock ; it += 2 * intsPerBlock) { // `2 * intsPerBlock` is the size of a pair (2 blocks)
+		Iter endOfFirstBlock = it + intsPerBlock;
+		Iter lastIntOfFirstBlock = endOfFirstBlock - 1;
+		Iter lastIntOfSecondBlock = lastIntOfFirstBlock + intsPerBlock;
+		// If pair's first block > second block: we swap blocks
+		// (We compare the last int of each block as it is the biggest one of the block)
+		if (_compareIters(lastIntOfSecondBlock, lastIntOfFirstBlock)) {
+			// Swap pair = swap each int of first block with the corresponding int of second block
+			for (Iter it2 = it; it2 != endOfFirstBlock; ++it2) {
+				std::iter_swap(it2, it2 + intsPerBlock);
+			}
+		}
+	}
+	mergeInsertionSort(v, intsPerBlock * 2); // recursive call (pair of pair of blocks, etc...)
+
+	/**
+	 * 2. Create theMain and thePend.
+	 */
+
+	std::vector<Iter> theMain;
+	std::vector<Iter> thePend;
+
+	// push last int of b1 to theMain
+	theMain.push_back(v.begin() + intsPerBlock - 1);
+	// push last int of a1 to theMain
+	theMain.push_back(v.begin() + 2 * intsPerBlock - 1);
+
+	// push the rest of last ints of `a` blocks into theMain and the rest of last ints of `b` blocks into thePend
+	Iter firstIntOfThirdBlock = firstInt + 2 * intsPerBlock;
+	size_t pairJump = 2 * intsPerBlock;
+	for (Iter it = firstIntOfThirdBlock; it != endOflastPairableBlock; it += pairJump) {
+		Iter blockLastInt = it + intsPerBlock - 1;
+		thePend.push_back(blockLastInt);
+		theMain.push_back(blockLastInt + intsPerBlock);
+	}
+	// Push the odd block into thePend
+	if (hasOddNbOfBlocks) {
+		Iter lastIntOfLastBlock = endOflastBlock - 1;
+		thePend.push_back(lastIntOfLastBlock);
+	}
+
+	/**
+	 * 3. Insert thePend into theMain using Jacobsthal order.
+	 */
+
+	// Jacobsthal order
+	size_t prevJacobsthalNb = 1; // We start at j(2) = 1 (we skip j(0) and j(1): base cases for the sequence construction)
+	size_t insertedIters = 0;
+	for(size_t n = 3; true; ++n) { // Loop from j(3)
+		size_t currJacobsthalNb = _getJacobsthalNumber(n);
+		size_t ItersToInsert = currJacobsthalNb - prevJacobsthalNb; // We insert the iterator to the last int of each block
+		if (ItersToInsert > thePend.size())
+			break; // We exit if there is not enough blocks in the pend for this Jacobsthal number
+
+		std::vector<Iter>::iterator IntInPend = thePend.begin() + ItersToInsert - 1;
+		std::vector<Iter>::iterator boundInMain = theMain.begin() + currJacobsthalNb + insertedIters;
+
+		size_t offset = 0;
+		for (size_t i = ItersToInsert; i > 0; --i) {
+			std::vector<Iter>::iterator insertPos = std::upper_bound(theMain.begin(), boundInMain, *IntInPend, _compareIters<Iter>);
+			insertPos = theMain.insert(insertPos, *IntInPend);
+			IntInPend = thePend.erase(IntInPend);
+			IntInPend--;
+			offset += static_cast<size_t>(insertPos - theMain.begin()) == (currJacobsthalNb + insertedIters);
+			boundInMain = theMain.begin() + currJacobsthalNb + insertedIters - offset;
+		}
+		prevJacobsthalNb = currJacobsthalNb;
+		insertedIters += ItersToInsert;
+	}
+	// Insert the b's leftovers (above last Jacobthal number)
+	for (size_t i = thePend.size(); i > 0; --i) {
+		std::vector<Iter>::iterator IntInPend = thePend.begin() + i - 1;
+		std::vector<Iter>::iterator boundInMain = theMain.end() - thePend.size() + i - 1 + hasOddNbOfBlocks;
+		std::vector<Iter>::iterator insertPos = std::upper_bound(theMain.begin(), boundInMain, *IntInPend, _compareIters<Iter>);
+		insertPos = theMain.insert(insertPos, *IntInPend);
+	}
+
+	/**
+	 * 4. Replace values in the original vector.
+	 */
+
+	std::vector<int> tmp;
+	tmp.reserve(v.size());
+	for (std::vector<Iter>::iterator it = theMain.begin(); it != theMain.end(); ++it) {
+		Iter firstIntOfBlock = *it - intsPerBlock + 1;
+		for (size_t j = 0; j < intsPerBlock; ++j) {
+			tmp.push_back(*(firstIntOfBlock + j));
+		}
+	}
+	for (size_t i = 0; i < tmp.size(); ++i) {
+		v[i] = tmp[i];
 	}
 }
 
-// GETTERS
-
-std::vector<int> const&	PmergeMe::getUnsorted() const
+/**
+ * [DEQUE VERSION] Merge-Insertion Sort algorithm (Ford-Johnson) on a deque of ints.
+ *
+ * @return size_t Total number of comparisons made during the sort.
+ */
+void	PmergeMe::mergeInsertionSort(std::deque<int>& d, size_t intsPerBlock)
 {
-	return _unsorted;
-}
+	totalComparisons = 0;
+	typedef std::deque<int>::iterator Iter;
+	size_t nbOfBlocks = d.size() / intsPerBlock;
+	if (nbOfBlocks < 2)
+		return;
 
-std::vector<int> const&	PmergeMe::getSorted() const
-{
-	return _bigNbs;
-}
+	bool hasOddNbOfBlocks = nbOfBlocks % 2 == 1;
+	Iter firstInt = d.begin();
+	Iter endOflastBlock = firstInt + nbOfBlocks * intsPerBlock;
+	Iter endOflastPairableBlock = endOflastBlock - hasOddNbOfBlocks * intsPerBlock;
 
-std::vector<int> const&	PmergeMe::getBigNbs() const
-{
-	return _bigNbs;
-}
+	/* 1. Order pairs of block recursively. */
 
-std::vector<int> const&	PmergeMe::getSmallNbs() const
-{
-	return _smallNbs;
-}
-
-double	PmergeMe::getElapsedTime() const
-{
-	long sec = _endTime.tv_sec - _startTime.tv_sec;
-	long usec = _endTime.tv_usec - _startTime.tv_usec;
-	return sec * 1e6 + usec;
-}
-
-// PRINT
-
-std::ostream&	operator<<(std::ostream& os, std::vector<int> const& numbers)
-{
-	for(size_t i = 0; i < numbers.size(); ++i) {
-		os << numbers[i];
-		if (i != numbers.size() - 1)
-			os << " ";
+	for (Iter it = firstInt; it != endOflastPairableBlock ; it += 2 * intsPerBlock) {
+		Iter endOfFirstBlock = it + intsPerBlock;
+		Iter lastIntOfFirstBlock = endOfFirstBlock - 1;
+		Iter lastIntOfSecondBlock = lastIntOfFirstBlock + intsPerBlock;
+		if (_compareIters(lastIntOfSecondBlock, lastIntOfFirstBlock)) {
+			for (Iter it2 = it; it2 != endOfFirstBlock; ++it2)
+				std::iter_swap(it2, it2 + intsPerBlock);
+		}
 	}
-	return os;
-}
+	mergeInsertionSort(d, intsPerBlock * 2);
 
-std::ostream&	operator<<(std::ostream& os, PmergeMe const& pmm)
-{
-	os << "Before: " << pmm.getUnsorted() << "\n";
-	os << "After: " << pmm.getSorted() << "\n";
+	/* 2. Create theMain and thePend. */
 
-	// Elasped time
-	os << "Time to process a range of " << pmm.getUnsorted().size() << " elements with std::vector : "
-		<< std::fixed << std::setprecision(5) << pmm.getElapsedTime() << " us";
+	std::vector<Iter> theMain;
+	std::vector<Iter> thePend;
 
-	return os;
+	theMain.push_back(d.begin() + intsPerBlock - 1);
+	theMain.push_back(d.begin() + 2 * intsPerBlock - 1);
+
+	Iter firstIntOfThirdBlock = firstInt + 2 * intsPerBlock;
+	size_t pairJump = 2 * intsPerBlock;
+	for (Iter it = firstIntOfThirdBlock; it != endOflastPairableBlock; it += pairJump) {
+		Iter blockLastInt = it + intsPerBlock - 1;
+		thePend.push_back(blockLastInt);
+		theMain.push_back(blockLastInt + intsPerBlock);
+	}
+
+	if (hasOddNbOfBlocks) {
+		Iter lastIntOfLastBlock = endOflastBlock - 1;
+		thePend.push_back(lastIntOfLastBlock);
+	}
+
+	/* 3. Insert thePend into theMain using Jacobsthal order. */
+
+	size_t prevJacobsthalNb = 1;
+	size_t insertedIters = 0;
+	for(size_t n = 3; true; ++n) { // Loop from j(3)
+		size_t currJacobsthalNb = _getJacobsthalNumber(n);
+		size_t ItersToInsert = currJacobsthalNb - prevJacobsthalNb; // We insert the iterator to the last int of each block
+		if (ItersToInsert > thePend.size())
+			break;
+		std::vector<Iter>::iterator IntInPend = thePend.begin() + ItersToInsert - 1;
+		std::vector<Iter>::iterator boundInMain = theMain.begin() + currJacobsthalNb + insertedIters;
+		size_t offset = 0;
+		for (size_t i = ItersToInsert; i > 0; --i) {
+			std::vector<Iter>::iterator insertPos = std::upper_bound(theMain.begin(), boundInMain, *IntInPend, _compareIters<Iter>);
+			insertPos = theMain.insert(insertPos, *IntInPend);
+			IntInPend = thePend.erase(IntInPend);
+			IntInPend--;
+			offset += static_cast<size_t>(insertPos - theMain.begin()) == (currJacobsthalNb + insertedIters);
+			boundInMain = theMain.begin() + currJacobsthalNb + insertedIters - offset;
+		}
+		prevJacobsthalNb = currJacobsthalNb;
+		insertedIters += ItersToInsert;
+	}
+
+	for (size_t i = thePend.size(); i > 0; --i) {
+		std::vector<Iter>::iterator IntInPend = thePend.begin() + i - 1;
+		std::vector<Iter>::iterator boundInMain = theMain.end() - thePend.size() + i - 1 + hasOddNbOfBlocks;
+		std::vector<Iter>::iterator insertPos = std::upper_bound(theMain.begin(), boundInMain, *IntInPend, _compareIters<Iter>);
+		insertPos = theMain.insert(insertPos, *IntInPend);
+	}
+
+	/* 4. Replace values in the original vector. */
+
+	std::vector<int> tmp;
+	tmp.reserve(d.size());
+	for (std::vector<Iter>::iterator it = theMain.begin(); it != theMain.end(); ++it) {
+		Iter firstIntOfBlock = *it - intsPerBlock + 1;
+		for (size_t j = 0; j < intsPerBlock; ++j)
+			tmp.push_back(*(firstIntOfBlock + j));
+	}
+	for (size_t i = 0; i < tmp.size(); ++i)
+		d[i] = tmp[i];
 }
