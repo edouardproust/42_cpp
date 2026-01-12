@@ -5,6 +5,14 @@ size_t	PmergeMe::totalComparisons = 0;
 PmergeMe::PmergeMe()
 {}
 
+PmergeMe::PmergeMe(PmergeMe const&)
+{}
+
+PmergeMe&	PmergeMe::operator=(PmergeMe const&)
+{
+	return *this;
+}
+
 PmergeMe::~PmergeMe()
 {}
 
@@ -18,47 +26,6 @@ double	PmergeMe::fjUpperBound(int n) {
 }
 
 /**
- * @note May throw an exception.
- */
-void	PmergeMe::validateArgs(int ac, char** av)
-{
-	if (ac < 2)
-		throw std::invalid_argument("Usage: ./PmergeMe <positive_integer1> [positive_integer2 ... positive_integerN]");
-
-	// Validate each arg
-	for (int i = 1; i < ac; ++i) {
-		if (!av[i] || av[i][0] == '\0')
-			throw std::invalid_argument("Empty argument");
-		// Validate characters (only digits allowed: "-", "+", etc. are forbidden)
-		for (int j = 0; av[i][j]; ++j) {
-			if (!std::isdigit(static_cast<unsigned char>(av[i][j]))) // static_cast to prevent UB is char is negative
-				throw std::invalid_argument("Invalid character in argument");
-		}
-		// Validate overflow
-		long nb = std::strtol(av[i], NULL, 10); // no need to check `*endptr != '\0'`: we have only digits at this point
-		if (nb > std::numeric_limits<int>::max()) // no need to check `errno == ERANGE`: nb is always positive at this point
-			throw std::out_of_range("Number too large");
-	}
-}
-
-std::vector<int>	PmergeMe::argsToVector(int ac, char** av)
-{
-	std::vector<int> vec;
-	vec.reserve(ac - 1);
-	for (int i = 1; i < ac; ++i)
-		vec.push_back(static_cast<int>(std::strtol(av[i], NULL, 10)));
-	return vec;
-}
-
-std::deque<int>	PmergeMe::argsToDeque(int ac, char** av)
-{
-	std::deque<int> deq;
-	for (int i = 1; i < ac; ++i)
-		deq.push_back(static_cast<int>(std::strtol(av[i], NULL, 10)));
-	return deq;
-}
-
-/**
  * Get the nth Jacobsthal number.
  */
 size_t	PmergeMe::_getJacobsthalNumber(size_t n)
@@ -67,7 +34,8 @@ size_t	PmergeMe::_getJacobsthalNumber(size_t n)
 }
 
 /**
- * [VECTOR VERSION] Merge-Insertion Sort algorithm (Ford-Johnson) on a vector of ints.
+ * [VECTOR VERSION]
+ * Merge-Insertion Sort algorithm (Ford-Johnson) on a vector of ints.
  *
  * @note Used terminology:
  * - A "pair" contains is made of 2 "blocks".
@@ -187,7 +155,8 @@ void	PmergeMe::mergeInsertionSort(std::vector<int>& v, size_t intsPerBlock)
 }
 
 /**
- * [DEQUE VERSION] Merge-Insertion Sort algorithm (Ford-Johnson) on a deque of ints.
+ * [DEQUE VERSION]
+ * Merge-Insertion Sort algorithm (Ford-Johnson) on a deque of ints.
  *
  * @return size_t Total number of comparisons made during the sort.
  */
@@ -219,8 +188,8 @@ void	PmergeMe::mergeInsertionSort(std::deque<int>& d, size_t intsPerBlock)
 
 	/* 2. Create theMain and thePend. */
 
-	std::vector<Iter> theMain;
-	std::vector<Iter> thePend;
+	std::deque<Iter> theMain;
+	std::deque<Iter> thePend;
 
 	theMain.push_back(d.begin() + intsPerBlock - 1);
 	theMain.push_back(d.begin() + 2 * intsPerBlock - 1);
@@ -247,11 +216,11 @@ void	PmergeMe::mergeInsertionSort(std::deque<int>& d, size_t intsPerBlock)
 		size_t ItersToInsert = currJacobsthalNb - prevJacobsthalNb; // We insert the iterator to the last int of each block
 		if (ItersToInsert > thePend.size())
 			break;
-		std::vector<Iter>::iterator IntInPend = thePend.begin() + ItersToInsert - 1;
-		std::vector<Iter>::iterator boundInMain = theMain.begin() + currJacobsthalNb + insertedIters;
+		std::deque<Iter>::iterator IntInPend = thePend.begin() + ItersToInsert - 1;
+		std::deque<Iter>::iterator boundInMain = theMain.begin() + currJacobsthalNb + insertedIters;
 		size_t offset = 0;
 		for (size_t i = ItersToInsert; i > 0; --i) {
-			std::vector<Iter>::iterator insertPos = std::upper_bound(theMain.begin(), boundInMain, *IntInPend, _compareIters<Iter>);
+			std::deque<Iter>::iterator insertPos = std::upper_bound(theMain.begin(), boundInMain, *IntInPend, _compareIters<Iter>);
 			insertPos = theMain.insert(insertPos, *IntInPend);
 			IntInPend = thePend.erase(IntInPend);
 			IntInPend--;
@@ -263,17 +232,16 @@ void	PmergeMe::mergeInsertionSort(std::deque<int>& d, size_t intsPerBlock)
 	}
 
 	for (size_t i = thePend.size(); i > 0; --i) {
-		std::vector<Iter>::iterator IntInPend = thePend.begin() + i - 1;
-		std::vector<Iter>::iterator boundInMain = theMain.end() - thePend.size() + i - 1 + hasOddNbOfBlocks;
-		std::vector<Iter>::iterator insertPos = std::upper_bound(theMain.begin(), boundInMain, *IntInPend, _compareIters<Iter>);
+		std::deque<Iter>::iterator IntInPend = thePend.begin() + i - 1;
+		std::deque<Iter>::iterator boundInMain = theMain.end() - thePend.size() + i - 1 + hasOddNbOfBlocks;
+		std::deque<Iter>::iterator insertPos = std::upper_bound(theMain.begin(), boundInMain, *IntInPend, _compareIters<Iter>);
 		insertPos = theMain.insert(insertPos, *IntInPend);
 	}
 
-	/* 4. Replace values in the original vector. */
+	/* 4. Replace values in the original deque. */
 
-	std::vector<int> tmp;
-	tmp.reserve(d.size());
-	for (std::vector<Iter>::iterator it = theMain.begin(); it != theMain.end(); ++it) {
+	std::deque<int> tmp;
+	for (std::deque<Iter>::iterator it = theMain.begin(); it != theMain.end(); ++it) {
 		Iter firstIntOfBlock = *it - intsPerBlock + 1;
 		for (size_t j = 0; j < intsPerBlock; ++j)
 			tmp.push_back(*(firstIntOfBlock + j));

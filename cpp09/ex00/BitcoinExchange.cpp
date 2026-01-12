@@ -39,7 +39,7 @@ void	BitcoinExchange::printOutput() const {
 		if (!_isLineWithDate(line)) {
 			continue;
 		}
-		// Split line into date and value 
+		// Split line into date and value
 		std::string date, value;
 		if (!_splitLine(line, " | ", date, value)) {
 			std::cerr << "Error: bad input => " << line << std::endl;
@@ -123,22 +123,33 @@ std::string& lhs, std::string& rhs)
 	return true;
 }
 
+bool	hasValidFebruaryDay(int year, int day)
+{
+	// Check for leap year
+	bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+	return isLeapYear ? day <= 29 : day <= 28;
+}
+
+/**
+ * @note Bitcoin was created in 2008, so any date before that is invalid.
+ * Also checks for month/day validity.
+ */
 void	BitcoinExchange::_checkDate(std::string const& s)
 {
 	size_t	dash1Pos = s.find("-");
 	size_t	dash2Pos = s.find("-", dash1Pos + 1);
-	if (dash1Pos == s.npos || dash2Pos == s.npos) {	
+	if (dash1Pos == s.npos || dash2Pos == s.npos) {
 		throw std::runtime_error("Error: invalid date format => " + s + " (should be YYYY-MM-DD)");
 	}
 	int year = std::atoi(s.substr(0, dash1Pos).c_str());
 	int month = std::atoi(s.substr(dash1Pos + 1, dash2Pos).c_str());
 	int day = std::atoi(s.substr(dash2Pos + 1, s.size()).c_str());
-	if (year < 0 || month < 1 || month > 12 || day < 1 || day > 31
+	if (year < 2008 || month < 1 || month > 12 || day < 1 || day > 31
 		|| ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30)
-		|| (month == 2 && day > 29)) {
+		|| (month == 2 && !hasValidFebruaryDay(year, day))) {
 			throw std::runtime_error("Error: invalid date => " + s);
-		}
 	}
+}
 
 void	BitcoinExchange::_checkInputLineValue(double const& value)
 {
