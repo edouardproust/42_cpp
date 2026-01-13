@@ -9,7 +9,6 @@
 #include <stdlib.h> // strtod()
 #include <cstdlib> // std::atof()
 
-// TODO: fevrier annees bissextiles!!!
 class BitcoinExchange
 {
 	typedef std::map<std::string, double>	Data;
@@ -18,18 +17,16 @@ class BitcoinExchange
 	char const*	_inputPath;
 	Data		_data;
 
-	BitcoinExchange();
-
 	void			_parseData();
 	double			_getResult(std::string const&, double const&) const;
-
-	static bool		_isLineWithDate(std::string const& str);
-	static bool		_splitLine(std::string const&, std::string const&, std::string&, std::string&);
+	static void		_splitLine(std::string const&, std::string const&, std::string&, std::string&);
 	static void		_checkDate(std::string const&);
-	static void		_checkInputLineValue(double const&);
+	static int		_checkDatePart(std::string const& part);
+	static double	_checkValue(std::string const&);
 
 	public:
 
+		BitcoinExchange();
 		BitcoinExchange(char const*, char const*);
 		BitcoinExchange(BitcoinExchange const&);
 		BitcoinExchange&	operator=(BitcoinExchange const&);
