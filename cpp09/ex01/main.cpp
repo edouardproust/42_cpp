@@ -4,7 +4,7 @@ int main(int ac, char** av)
 {
 	// Check input
 	if (ac != 2) {
-		std::cerr << "Usage: ./RPN <expression>\nExample: ./RPN \"7 12 * 2 /\"" << std::endl;
+		std::cerr << "Usage: ./RPN <expression>\nExample: ./RPN \"2 9 * 2 /\"" << std::endl;
 		return 2;
 	}
 	// Get result
