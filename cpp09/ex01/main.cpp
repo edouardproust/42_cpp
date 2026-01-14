@@ -9,8 +9,8 @@ int main(int ac, char** av)
 	}
 	// Get result
 	try {
-		RPN rpn(av[1]);
-		std::cout << rpn.getResult() << std::endl;
+		RPN rpn;
+		std::cout << rpn.calculate(av[1]) << std::endl;
 	} catch (std::exception const& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return 1;

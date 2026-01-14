@@ -1,46 +1,52 @@
 #include "RPN.hpp"
 
-RPN::RPN(std::string const& input) {
-	_calculate(input);
-}
+RPN::RPN()
+{}
 
-RPN::~RPN() {}
+RPN::RPN(RPN const& other)
+: _stack(other._stack)
+{}
 
-int const&	RPN::getResult() const {
-	if (_stack.size() != 1) {
-		throw std::runtime_error("unprocessed operand(s)");
+RPN&	RPN::operator=(RPN const& other)
+{
+	if (this != &other) {
+		_stack = other._stack; // Use of std::stack's operator=()
 	}
-	return _stack.top();
+	return *this;
 }
 
-void	RPN::_calculate(std::string const& expr)
+RPN::~RPN()
+{}
+
+int	RPN::calculate(std::string const& expr)
 {
 	// Check chars validity
-	if (expr.find_first_not_of("0123456789 +-*/") != std::string::npos) {
-		throw std::runtime_error("invalid char found");
+	size_t invalidCharPos = expr.find_first_not_of("0123456789 +-*/");
+	if (invalidCharPos != std::string::npos) {
+		throw std::runtime_error("invalid char: " + std::string(1, expr[invalidCharPos]));
 	}
 	// Extract tokens and process them
 	std::istringstream ss(expr);
-	for (std::string token; ss >> token;) {
-	//for (std::string token; std::getline(ss, token, ' ');) {
-	//	if (token.size() == 0) continue;
+	for (std::string token; ss >> token;) { // Auto skip whitespaces before filling token
 		if (token.size() == 1 && token.find_first_of("+-/*") != std::string::npos) {
 			_pushOperatorResult(token);
 		} else {
 			_pushOperand(token);
 		}
 	}
+	// Return result
+	if (_stack.size() != 1) {
+		throw std::overflow_error("unprocessed operand(s)");
+	}
+	return _stack.top();
 }
 
 void	RPN::_pushOperand(std::string const& operand)
 {
 	char* endptr;
 	long n = std::strtol(operand.c_str(), &endptr, 10);
-	if (*endptr != '\0') {
-		throw std::runtime_error("invalid operand");
-	}
-	if (n < std::numeric_limits<int>::min() || n > std::numeric_limits<int>::max()) {	
-		throw std::runtime_error("operand oveflow");
+	if (*endptr != '\0' || n < 0 || n > 9) {
+		throw std::runtime_error("invalid operand: " + operand);
 	}
 	_stack.push(static_cast<int>(n));
 }
@@ -49,7 +55,7 @@ void	RPN::_pushOperatorResult(std::string const& op)
 {
 	// Operator needs 2 operands to be possible
 	if (_stack.size() < 2) {
-		throw std::runtime_error("not enough operands before operator");
+		throw std::underflow_error("not enough operands before operator");
 	}
 	// Get the 2 top operands
 	int second = _stack.top();
@@ -74,7 +80,7 @@ void	RPN::_pushOperatorResult(std::string const& op)
 	}
 	// Check result overflow
 	if (res < std::numeric_limits<int>::min() || res > std::numeric_limits<int>::max()) {
-		throw std::runtime_error("intermediary result overflow");
+		throw std::overflow_error("intermediary result overflow");
 	}
 	// Push result to stack
 	_stack.push(static_cast<int>(res));

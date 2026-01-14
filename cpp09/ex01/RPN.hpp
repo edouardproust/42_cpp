@@ -13,7 +13,7 @@
  * RPN error cases:
  * - on parsing:
  *  meet an char other than [0-9] + - / * or space
- *  meet an operand >= 10
+ *  meet an operand > 9 or < 0
  * - on caclulation
  *  meet an operator + - / * but there is less than 2 operands in stack
  *  division by 0
@@ -25,21 +25,17 @@ class RPN
 {
 	std::stack<int>	_stack;
 
-	// TODO Make canonical
-	RPN();
-	RPN(RPN const&);
-	RPN&	operator=(RPN const&);
-
-	void	_calculate (std::string const&);
 	void	_pushOperand(std::string const&);
 	void	_pushOperatorResult(std::string const&);
 
 	public:
 
-		RPN(std::string const&);
+		RPN();
+		RPN(RPN const&);
+		RPN&	operator=(RPN const&);
 		~RPN();
 
-		int const&	getResult() const;
+		int	calculate (std::string const&);
 };
 
 #endif
