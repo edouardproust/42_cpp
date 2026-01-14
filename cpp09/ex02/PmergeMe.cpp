@@ -22,7 +22,8 @@ PmergeMe::~PmergeMe()
  * Formula: n*log2(n) - 1.329n
  */
 double	PmergeMe::fjUpperBound(int n) {
-    return round(n * (std::log(n) / std::log(2.0)) - 1.329 * n);
+	double upperBound = round(n * (std::log(n) / std::log(2.0)) - 1.329 * n);
+	return upperBound < 0 ? 0 : upperBound;
 }
 
 /**
@@ -242,9 +243,10 @@ void	PmergeMe::mergeInsertionSort(std::deque<int>& d, size_t intsPerBlock)
 
 	std::deque<int> tmp;
 	for (std::deque<Iter>::iterator it = theMain.begin(); it != theMain.end(); ++it) {
-		Iter firstIntOfBlock = *it - intsPerBlock + 1;
+		size_t blockLastIntIdx = *it - d.begin();
+		size_t firstIntOfBlockIdx = blockLastIntIdx - intsPerBlock + 1;
 		for (size_t j = 0; j < intsPerBlock; ++j)
-			tmp.push_back(*(firstIntOfBlock + j));
+			tmp.push_back(d[firstIntOfBlockIdx + j]);
 	}
 	for (size_t i = 0; i < tmp.size(); ++i)
 		d[i] = tmp[i];

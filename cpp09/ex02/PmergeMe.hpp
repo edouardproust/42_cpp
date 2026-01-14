@@ -29,9 +29,10 @@ class PmergeMe
 };
 
 template <typename Iter>
-bool	PmergeMe::_compareIters(Iter const& a, Iter const& b) {
+bool	PmergeMe::_compareIters(Iter const& a, Iter const& b)
+{
 	totalComparisons++;
-    return *a < *b;
+	return *a < *b;
 }
 
 #endif
