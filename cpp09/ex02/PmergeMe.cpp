@@ -39,7 +39,7 @@ size_t	PmergeMe::_getJacobsthalNumber(size_t n)
  * Merge-Insertion Sort algorithm (Ford-Johnson) on a vector of ints.
  *
  * Key idea: Minimize comparisons by:
- * 1. Creating pairs and sorting them recursively (largest element known per pair)
+ * 1. Creating pairs then sorting the largest element of each pair recursively
  * 2. Building a sorted "main chain" from the larger elements
  * 3. Inserting smaller elements using binary search in optimal Jacobsthal order
  *
@@ -56,7 +56,7 @@ void	PmergeMe::mergeInsertionSort(std::vector<int>& v, size_t intsPerBlock)
 	if (nbOfBlocks < 2)
 		return;
 
-	bool hasOddNbOfBlocks = nbOfBlocks % 2 == 1; // ints that cannot even form a block are ignored in this count
+	bool hasOddNbOfBlocks = nbOfBlocks % 2 == 1;
 	Iter firstInt = v.begin();
 	Iter endOflastBlock = firstInt + nbOfBlocks * intsPerBlock;
 	Iter endOflastPairableBlock = endOflastBlock - hasOddNbOfBlocks * intsPerBlock;
@@ -70,7 +70,7 @@ void	PmergeMe::mergeInsertionSort(std::vector<int>& v, size_t intsPerBlock)
 	 * - This guarantees: after this step, second block always has larger max
 	 */
 
-	for (Iter it = firstInt; it != endOflastPairableBlock ; it += 2 * intsPerBlock) { // `2 * intsPerBlock` is the size of a pair (2 blocks)
+	for (Iter it = firstInt; it != endOflastPairableBlock ; it += 2 * intsPerBlock) {
 		Iter endOfFirstBlock = it + intsPerBlock;
 		Iter lastIntOfFirstBlock = endOfFirstBlock - 1;
 		Iter lastIntOfSecondBlock = lastIntOfFirstBlock + intsPerBlock;
@@ -84,8 +84,8 @@ void	PmergeMe::mergeInsertionSort(std::vector<int>& v, size_t intsPerBlock)
 		}
 	}
 
-	// Recursive call: treat each pair as a single "super-block"
-	// This builds a hierarchy where we know relative ordering at each level
+	// Recursive call: merge pairs into larger blocks (pairs of pairs of ints, etc.) and sort them
+	// After return: pairs are ordered by their larger ('a') elements
 	mergeInsertionSort(v, intsPerBlock * 2);
 
 	/**
@@ -94,8 +94,7 @@ void	PmergeMe::mergeInsertionSort(std::vector<int>& v, size_t intsPerBlock)
 	 * After recursion, pairs are ordered by their larger element.
 	 * Notation: pair (b₁, a₁), (b₂, a₂), (b₃, a₃)... where aᵢ > bᵢ
 	 * Main chain: b₁, a₁, a₂, a₃, a₄... (all 'a' elements + first 'b')
-	 *             └─────┘  └──────────┘
-	 *             smallest   sorted larger elements
+	 * [smallest]──┴────┘  └──────────┴──[sorted larger elements]
 	 * Pend chain: b₂, b₃, b₄... (remaining 'b' elements to insert)
 	 * Key insight: We know b₁ is smallest (a₁ > b₁, and a₁ is smallest 'a')
 	 */
@@ -125,16 +124,13 @@ void	PmergeMe::mergeInsertionSort(std::vector<int>& v, size_t intsPerBlock)
 	/**
 	 * STEP 3: Insert pend elements into main chain using Jacobsthal order.
 	 *
-	 * Why Jacobsthal sequence? It minimizes worst-case comparisons.
-	 * J(n) = 1, 1, 3, 5, 11, 21, 43, 85...
-	 *
-	 * Insertion order: Group elements by Jacobsthal differences
-	 * - Between J(2)=1 and J(3)=3: insert elements at indices 2,3 (2 elements)
-	 * - Between J(3)=3 and J(4)=5: insert elements at indices 4,5 (2 elements)
-	 * - Between J(4)=5 and J(5)=11: insert elements at indices 10,9,8,7,6 (5 elements, reverse!)
-	 *
-	 * Within each group: insert in DESCENDING order to limit search range
-	 * For bᵢ, we know: bᵢ < aᵢ, so search only up to aᵢ's position in main chain
+	 * Jacobsthal sequence minimizes worst-case comparisons: J(n) = 1, 1, 3, 5, 11, 21, 43, 85...
+	 * Insertion order: Group elements by Jacobsthal differences and
+	 * insert in DESCENDING order to limit search range:
+	 * - Between J(2)=1 and J(3)=3: insert elements at indices 3,2 (2 elements)
+	 * - Between J(3)=3 and J(4)=5: insert elements at indices 5,4 (2 elements)
+	 * - Between J(4)=5 and J(5)=11: insert elements at indices 10,9,8,7,6 (5 elements)
+	 * For bᵢ, we know: bᵢ < aᵢ, so search only up to aᵢ's position in main chain (pairing main-pend)
 	 */
 
 	size_t prevJacobsthalNb = 1;  // J(2) = 1
